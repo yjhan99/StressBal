@@ -4,7 +4,6 @@
  */
 package com.garmin.android.apps.connectiq.sample.comm.activities
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
@@ -19,8 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.garmin.android.apps.connectiq.sample.comm.R
-import com.garmin.android.apps.connectiq.sample.comm.Service.InterventionService
-import com.garmin.android.apps.connectiq.sample.comm.Utils.mPreferences
+import com.garmin.android.apps.connectiq.sample.comm.Service.FeatureService
 import com.garmin.android.apps.connectiq.sample.comm.adapter.IQDeviceAdapter
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
@@ -37,14 +35,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var connectIQ: ConnectIQ
     private lateinit var adapter: IQDeviceAdapter
     private lateinit var btnIntervention: Button
-    private lateinit var btnParse: Button
     private var isSdkReady = false
 
     private lateinit var toolbar: Toolbar
 
-    private lateinit var rawDatas: String
-    private var dataMap1: MutableMap<String, MutableList<Int>> = mutableMapOf()
-    private var dataMap2: MutableMap<String, Int> = mutableMapOf()
+    //private lateinit var btnParse: Button
+    //private lateinit var rawDatas: String
+    //private var dataMap1: MutableMap<String, MutableList<Int>> = mutableMapOf()
+    //private var dataMap2: MutableMap<String, Int> = mutableMapOf()
 
     private val connectIQListener: ConnectIQ.ConnectIQListener =
         object : ConnectIQ.ConnectIQListener {
@@ -76,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         setupUi()
         setupConnectIQSdk()
 
+        /*
         btnParse = findViewById(R.id.parsing)
         btnParse.setOnClickListener{
             rawDatas = "{30s=[11], 30d=[8], 30x=[-191, -190, -292, -237, -278, -233, -209, -147, -36, 40, 74, 193, 234, 115, 18, -7, 9, 0, 0, 0, -2, -2, -1, -3, -3, -3, 0, -3, -3, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0], 30y=[573, 566, 572, 570, 571, 570, 574, 571, 575, 572, 574, 573, 574, 573, 571, 575, 570, 574, 573, 576, 569, 572, 574, 573, 574, 572, 567, 540, 630, 628, 614, 563, 796, 815, 621, 540, 411, 281, 389, 437, 449, 432], 30i=[865, 915, 924, 921, 905, 860, 843, 884, 853, 857, 864, 865, 882, 900, 916, 922, 931, 954], 30z=[-861, -862, -861, -862, -861, -861, -861, -860, -864, -863, -861, -862, -1031, -901, -864, -868, -857, -855, -860, -854, -859, -860]}"
@@ -119,15 +118,16 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "$dataMap1")
             Log.d(TAG, "$dataMap2")
         }
+        */
 
         btnIntervention = findViewById(R.id.btn_control_data_collection)
 
         btnIntervention.setOnClickListener{
-            if(isMyServiceRunning(InterventionService::class.java)){
+            if(isMyServiceRunning(FeatureService::class.java)){
                 //현재 intervention이 실행중인 경우, 실행중인 intervention을 종료
                 Toast.makeText(applicationContext, "Quit intervention", Toast.LENGTH_SHORT).show()
 
-                val stopIntent = Intent(this, InterventionService::class.java)
+                val stopIntent = Intent(this, FeatureService::class.java)
                 stopService(stopIntent)
                 Log.d(TAG, "Quit intervention process")
                 //connectIQ.shutdown(this)
@@ -173,9 +173,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onItemClick(device: IQDevice) {
-        if(!isMyServiceRunning(InterventionService::class.java)){
+        if(!isMyServiceRunning(FeatureService::class.java)){
             Toast.makeText(applicationContext, "Starting Intervention...", Toast.LENGTH_SHORT).show()
-            startService(InterventionService.putIntent(this, device))
+            startService(FeatureService.putIntent(this, device))
         } else {
             Toast.makeText(applicationContext, "Intervention cannot start", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "cannot start the intervention")

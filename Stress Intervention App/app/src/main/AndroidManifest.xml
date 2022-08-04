@@ -25,15 +25,11 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <service
-            android:name=".Service.AccelService"
-            android:enabled="true"
-            android:exported="true" />
-        <service
             android:name=".Service.LocationService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Service.InterventionService"
+            android:name=".Service.FeatureService"
             android:enabled="true"
             android:exported="true" />
 

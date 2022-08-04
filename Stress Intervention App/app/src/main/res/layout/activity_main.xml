@@ -54,6 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/main_information"
         android:paddingTop="18dp" />
 
+    <!--
     <Button
         android:id="@+id/parsing"
         android:layout_width="wrap_content"
@@ -69,6 +70,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
+    -->
 
     <Button
         android:id="@+id/btn_control_data_collection"

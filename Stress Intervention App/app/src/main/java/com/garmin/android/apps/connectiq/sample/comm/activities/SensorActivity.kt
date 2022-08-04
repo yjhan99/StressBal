@@ -1,13 +1,10 @@
 package com.garmin.android.apps.connectiq.sample.comm.activities
 
 import android.Manifest
-import android.app.Activity
 import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
 import android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
-import android.app.usage.UsageStats
-import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,21 +18,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
 import com.garmin.android.apps.connectiq.sample.comm.R
 import com.garmin.android.apps.connectiq.sample.comm.SensorFactory
-import com.garmin.android.apps.connectiq.sample.comm.Service.AccelService
 import com.garmin.android.apps.connectiq.sample.comm.adapter.SensorDatasAdapter
 import com.garmin.android.apps.connectiq.sample.comm.Service.LocationService
 import com.garmin.android.apps.connectiq.sample.comm.Service.PhoneUsageWork
-import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
-import com.garmin.android.apps.connectiq.sample.comm.roomdb.PhoneUsageData
-import java.sql.Timestamp
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.Comparator
 
 private const val TAG = "SensorActivity"
 

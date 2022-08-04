@@ -15,7 +15,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.activities.SensorActivity
-import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
+import com.garmin.android.apps.connectiq.sample.comm.roomdb.LocationDatabase
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -29,7 +29,7 @@ class LocationService : Service() {
     }
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var DBhelper: AppDatabase
+    private lateinit var DBhelper: LocationDatabase
 
     override fun onCreate() {
         super.onCreate()
@@ -76,7 +76,7 @@ class LocationService : Service() {
             return
         }
 
-        DBhelper = AppDatabase.getInstance(this)
+        DBhelper = LocationDatabase.getInstance(this)
 
         LocationServices.getFusedLocationProviderClient(this)
             .requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper())
@@ -91,7 +91,7 @@ class LocationService : Service() {
                 val longitude = locationResult.lastLocation.longitude
                 Log.v("LOCATION_UPDATE", "$latitude, $longitude")
                 val addRunnable = Runnable {
-                    DBhelper.roomDAO().insertLocationData(Timestamp(System.currentTimeMillis()).toString(), latitude, longitude)
+                    DBhelper.locationDAO().insertLocationData(Timestamp(System.currentTimeMillis()).toString(), latitude, longitude)
                 }
                 val thread = Thread(addRunnable)
                 thread.start()
