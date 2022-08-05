@@ -24,7 +24,6 @@ import com.garmin.android.apps.connectiq.sample.comm.R
 import com.garmin.android.apps.connectiq.sample.comm.SensorFactory
 import com.garmin.android.apps.connectiq.sample.comm.adapter.SensorDatasAdapter
 import com.garmin.android.apps.connectiq.sample.comm.Service.LocationService
-import com.garmin.android.apps.connectiq.sample.comm.Service.PhoneUsageWork
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -98,6 +97,7 @@ class SensorActivity : AppCompatActivity() {
             }
         }
 
+        /*
         // Phone usage service
         //TODO: Not implemented yet
         else if (datas.toString().equals(getString(R.string.start_pu_update))) {
@@ -150,6 +150,7 @@ class SensorActivity : AppCompatActivity() {
                 Log.e(TAG, "acc Service is not running")
             }
         }
+        */
 
     }
 

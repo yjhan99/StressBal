@@ -36,7 +36,7 @@ data class Locationdata(
 
 @Entity
 data class Userdata(
-    @PrimaryKey val current_time: String?,
+    @PrimaryKey val current_time: String,
     @ColumnInfo(name = "label") var label: Int?,
     @ColumnInfo(name = "HRV") val HRV: Double?,
     @ColumnInfo(name = "meanX") val meanX: Double?,

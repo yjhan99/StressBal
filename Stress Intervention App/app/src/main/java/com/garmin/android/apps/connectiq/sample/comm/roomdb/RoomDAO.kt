@@ -44,7 +44,7 @@ interface RoomDAO {
 
 @Dao
 interface UserDAO {
-    @Query("INSERT INTO Userdata VALUES (:currentTime, :label, :HRV, :meanX, :stdX, :magX, :meanY, :stdY, :magY, :magZ, :stdZ, :magZ," +
+    @Query("INSERT INTO Userdata VALUES (:currentTime, :label, :HRV, :meanX, :stdX, :magX, :meanY, :stdY, :magY, :meanZ, :stdZ, :magZ," +
             ":step, :distance, :home, :work, :screenTime)")
     fun insertData(currentTime: String, label: Int, HRV: Double, meanX: Double, stdX: Double, magX: Double, meanY: Double, stdY: Double, magY: Double,
                    meanZ: Double, stdZ: Double, magZ: Double, step: Double, distance: Boolean, home: Boolean, work: Boolean, screenTime: Double)
