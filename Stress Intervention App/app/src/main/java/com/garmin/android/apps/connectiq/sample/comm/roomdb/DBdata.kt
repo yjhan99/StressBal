@@ -3,40 +3,24 @@ package com.garmin.android.apps.connectiq.sample.comm.roomdb
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.sql.Timestamp
 
 @Entity
 data class HRVdata(
-    @PrimaryKey val current_time: String,
-    @ColumnInfo(name = "HRV_data") val HRVdata: Double
-)
-
-@Entity
-data class PhoneUsageData(
-    val current_time: String,
-    @ColumnInfo(name = "Package_Name") val PackageName: String,
-    @ColumnInfo(name = "LastTime_Used") val LastTimeUsed: String,
-    @ColumnInfo(name = "TotalTime_Foreground") val TotalTimeInForeground: Long,
-    @PrimaryKey(autoGenerate = true) val PUID: Int = 0
-)
-
-@Entity
-data class Accdata(
-    @PrimaryKey val current_time: String,
-    @ColumnInfo(name = "Acc_X_data") val AccXdata: Float,
-    @ColumnInfo(name = "Acc_Y_data") val AccYdata: Float,
-    @ColumnInfo(name = "Acc_Z_data") val AccZdata: Float
+    @PrimaryKey val currentTime: String,
+    @ColumnInfo(name = "HRVdata") val HRVdata: Double
 )
 
 @Entity
 data class Locationdata(
-    @PrimaryKey val current_time: String,
-    @ColumnInfo(name = "Latitude_data") val Latitudedata: Double,
-    @ColumnInfo(name = "Longtitude_data") val Longtitudedata: Double
+    @PrimaryKey val currentTime: String,
+    @ColumnInfo(name = "LatitudeData") val LatitudeData: Double,
+    @ColumnInfo(name = "LongtitudData") val LongtitudeData: Double
 )
 
 @Entity
 data class Userdata(
-    @PrimaryKey val current_time: String,
+    @PrimaryKey val currentTime: String,
     @ColumnInfo(name = "label") var label: Int?,
     @ColumnInfo(name = "HRV") val HRV: Double?,
     @ColumnInfo(name = "meanX") val meanX: Double?,
@@ -51,6 +35,13 @@ data class Userdata(
     @ColumnInfo(name = "step") val step: Double?,
     @ColumnInfo(name = "distance") val distance: Boolean?,
     @ColumnInfo(name = "home") val home: Boolean?,
-    @ColumnInfo(name = "work") val work: Boolean?,
-    @ColumnInfo(name = "screenTime") val screenTime: Double?
+    @ColumnInfo(name = "work") val work: Boolean?
 )
+
+@Entity
+data class ScreenData(
+    @PrimaryKey val currentTime: String,
+    @ColumnInfo var eventType: String
+){
+    constructor(eventType: String): this(Timestamp(System.currentTimeMillis()).toString() ,eventType)
+}

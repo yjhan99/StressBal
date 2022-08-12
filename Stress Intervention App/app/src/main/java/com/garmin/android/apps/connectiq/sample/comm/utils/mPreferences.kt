@@ -1,4 +1,4 @@
-package com.garmin.android.apps.connectiq.sample.comm.Utils
+package com.garmin.android.apps.connectiq.sample.comm.utils
 
 import android.app.Application
 

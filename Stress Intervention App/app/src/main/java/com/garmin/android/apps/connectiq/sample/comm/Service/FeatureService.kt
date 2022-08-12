@@ -9,7 +9,7 @@ import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.R
-import com.garmin.android.apps.connectiq.sample.comm.roomdb.UserDatabase
+import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQApp
 import com.garmin.android.connectiq.IQDevice
@@ -243,7 +243,7 @@ class FeatureService : Service() {
         else{
             stepdata = (currentstepData - lastStepData).toDouble()
         }
-        lastStepData = UserDatabase.getInstance(this).userDAO().readLastStep()
+        lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep()
         //TODO: lastStepData 바꿔주기
         return stepdata
     }
@@ -292,7 +292,7 @@ class FeatureService : Service() {
         val distancedata = distancedataProcessing(currentdistancedata)
 
         val addRunnable = Runnable {
-            UserDatabase.getInstance(this).userDAO().insertData(Timestamp(System.currentTimeMillis()).toString(), 2, hrvdata,
+            AppDatabase.getInstance(this).userDAO().insertData(Timestamp(System.currentTimeMillis()).toString(), 2, hrvdata,
                 meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, false, false, 0.0)
         }
         //TODO: label 데이터 뭐로 넣을건지 결정
