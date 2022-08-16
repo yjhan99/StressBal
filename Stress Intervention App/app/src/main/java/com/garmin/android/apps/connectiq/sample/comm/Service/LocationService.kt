@@ -91,7 +91,7 @@ class LocationService : Service() {
                 val longitude = locationResult.lastLocation.longitude
                 Log.v("LOCATION_UPDATE", "$latitude, $longitude")
                 val addRunnable = Runnable {
-                    DBhelper.locationDAO().insertLocationData(Timestamp(System.currentTimeMillis()).toString(), latitude, longitude)
+                    DBhelper.locationDAO().insertLocationData(Timestamp(System.currentTimeMillis()), latitude, longitude)
                 }
                 val thread = Thread(addRunnable)
                 thread.start()

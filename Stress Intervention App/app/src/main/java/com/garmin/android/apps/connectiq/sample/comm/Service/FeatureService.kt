@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.*
+import android.text.format.Time
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.R
@@ -44,7 +45,8 @@ class FeatureService : Service() {
     private var dataMap2: MutableMap<String, Int> = mutableMapOf()
     private var sensorData: Map<String, MutableList<Int>> = mutableMapOf()
     private var activityData: Map<String, Int> = mutableMapOf()
-    private var lastStepData: Int = 0
+
+    public var lastStepData: Int = -1
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -235,17 +237,26 @@ class FeatureService : Service() {
         return mag
     }
 
-    private fun stepdataProcessing(currentstepData: Int?): Double {
-        var stepdata = 0.0
+    private fun stepdataProcessing(currentstepData: Int?): Int {
+        var stepdata = 0
         if(currentstepData == null){
-            return 0.0
+            return 0
         }
         else{
-            stepdata = (currentstepData - lastStepData).toDouble()
+            if(lastStepData == -1) {
+                lastStepData = currentstepData
+                return 0
+            }
+            stepdata = currentstepData - lastStepData
+            lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep()
+            // 하루가 넘어가면 다시 리셋될 수 있도록
+            if(stepdata < 0) {
+                return 0
+            }
+            else {
+                return stepdata
+            }
         }
-        lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep()
-        //TODO: lastStepData 바꿔주기
-        return stepdata
     }
 
     private fun distancedataProcessing(currentdistanceData: Int?): Boolean {
@@ -291,13 +302,18 @@ class FeatureService : Service() {
         val currentdistancedata = activityData.get("d")
         val distancedata = distancedataProcessing(currentdistancedata)
 
+        //TODO: home, work 추가
+        val tenbftimestamp = Timestamp(System.currentTimeMillis() - 10*60*1000) //10분전 timestamp
+        val lastLatitude = AppDatabase.getInstance(this).locationDAO().readLatitudeData(tenbftimestamp)
+        val lastLongitude = AppDatabase.getInstance(this).locationDAO().readLongitudeData(tenbftimestamp)
+        // select로 읽어오면 어떻게 받는건지 (RoomDAO에서 코드 수정) -> 평균 계산
+
+        //TODO: screenTime 추가 (혜민)
+
         val addRunnable = Runnable {
-            AppDatabase.getInstance(this).userDAO().insertData(Timestamp(System.currentTimeMillis()).toString(), 2, hrvdata,
+            AppDatabase.getInstance(this).userDAO().insertData(Timestamp(System.currentTimeMillis()), 2, hrvdata,
                 meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, false, false, 0.0)
         }
-        //TODO: label 데이터 뭐로 넣을건지 결정
-        //TODO: home, work 추가
-        //TODO: screenTime 추가 (혜민)
         val thread = Thread(addRunnable)
         thread.start()
     }
