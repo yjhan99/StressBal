@@ -9,7 +9,7 @@ import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.R
-import com.garmin.android.apps.connectiq.sample.comm.roomdb.UserDatabase
+import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQApp
 import com.garmin.android.connectiq.IQDevice
@@ -44,7 +44,8 @@ class FeatureService : Service() {
     private var dataMap2: MutableMap<String, Int> = mutableMapOf()
     private var sensorData: Map<String, MutableList<Int>> = mutableMapOf()
     private var activityData: Map<String, Int> = mutableMapOf()
-    private var lastStepData: Int = 0
+
+    private var lastStepData: Int = -1
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -235,16 +236,26 @@ class FeatureService : Service() {
         return mag
     }
 
-    private fun stepdataProcessing(currentstepData: Int?): Double {
-        var stepdata = 0.0
+    private fun stepdataProcessing(currentstepData: Int?): Int {
+        var stepdata = 0
         if(currentstepData == null){
-            return 0.0
+            return 0
         }
         else{
-            stepdata = (currentstepData - lastStepData).toDouble()
+            if(lastStepData == -1) {
+                lastStepData = currentstepData
+                return 0
+            }
+            stepdata = currentstepData - lastStepData
+            lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep()
+            if(stepdata < 0) {
+                return 0
+            }
+            else {
+                return stepdata
+            }
         }
-        lastStepData = UserDatabase.getInstance(this).userDAO().readLastStep()
-        //TODO: lastStepData 바꿔주기
+        lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep()
         return stepdata
     }
 
@@ -262,6 +273,30 @@ class FeatureService : Service() {
             }
             return false
         }
+    }
+
+    private fun haversineHome(avgLatitude: Double, avgLongitude: Double): Double {
+        val homeLong = 36.366949
+        val homeLat = 127.357542
+        val dLong = Math.toRadians(avgLatitude - homeLong)
+        val dLat = Math.toRadians(avgLongitude - homeLat)
+        val earthRadiusKm = 6372.8
+
+        val a = Math.pow(Math.sin(dLat / 2), 2.toDouble()) + Math.pow(Math.sin(dLong / 2), 2.toDouble()) * Math.cos(homeLat) * Math.cos(avgLatitude);
+        val c = 2 * Math.asin(sqrt(a));
+        return earthRadiusKm * c
+    }
+
+    private fun haversineWork(avgLatitude: Double, avgLongitude: Double): Double {
+        val homeLong = 36.374233
+        val homeLat = 127.365749
+        val dLong = Math.toRadians(avgLatitude - homeLong)
+        val dLat = Math.toRadians(avgLongitude - homeLat)
+        val earthRadiusKm = 6372.8
+
+        val a = Math.pow(Math.sin(dLat / 2), 2.toDouble()) + Math.pow(Math.sin(dLong / 2), 2.toDouble()) * Math.cos(homeLat) * Math.cos(avgLatitude);
+        val c = 2 * Math.asin(sqrt(a));
+        return earthRadiusKm * c
     }
 
     private fun dataStoring(rawData: String) {
@@ -291,13 +326,29 @@ class FeatureService : Service() {
         val currentdistancedata = activityData.get("d")
         val distancedata = distancedataProcessing(currentdistancedata)
 
-        val addRunnable = Runnable {
-            UserDatabase.getInstance(this).userDAO().insertData(Timestamp(System.currentTimeMillis()).toString(), 2, hrvdata,
-                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, false, false, 0.0)
+        val tenbftimestamp = System.currentTimeMillis() - 10*60*1000 //10분전 timestamp
+        val lastLatitude = AppDatabase.getInstance(this).locationDAO().readLatitudeData(tenbftimestamp)
+        val lastLongitude = AppDatabase.getInstance(this).locationDAO().readLongitudeData(tenbftimestamp)
+        val avgLatitude = lastLatitude.average()
+        val avgLongitude = lastLongitude.average()
+        //home과의 거리
+        val homeDist = haversineHome(avgLatitude, avgLongitude)
+        var homedata = false
+        if (homeDist < 0.1) {
+            homedata = true
         }
-        //TODO: label 데이터 뭐로 넣을건지 결정
-        //TODO: home, work 추가
+        //work와의 거리
+        val workDist = haversineWork(avgLatitude, avgLongitude)
+        var workdata = false
+        if (workDist < 0.1) {
+            workdata = true
+        }
         //TODO: screenTime 추가 (혜민)
+
+        val addRunnable = Runnable {
+            AppDatabase.getInstance(this).userDAO().insertData(System.currentTimeMillis(), 2, hrvdata,
+                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, homedata, workdata, 0.0)
+        }
         val thread = Thread(addRunnable)
         thread.start()
     }

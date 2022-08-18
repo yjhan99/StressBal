@@ -15,7 +15,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.activities.SensorActivity
-import com.garmin.android.apps.connectiq.sample.comm.roomdb.LocationDatabase
+import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -29,7 +29,7 @@ class LocationService : Service() {
     }
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var DBhelper: LocationDatabase
+    private lateinit var DBhelper: AppDatabase
 
     override fun onCreate() {
         super.onCreate()
@@ -76,7 +76,7 @@ class LocationService : Service() {
             return
         }
 
-        DBhelper = LocationDatabase.getInstance(this)
+        DBhelper = AppDatabase.getInstance(this)
 
         LocationServices.getFusedLocationProviderClient(this)
             .requestLocationUpdates(locationRequest, mLocationCallback, Looper.getMainLooper())
@@ -91,7 +91,7 @@ class LocationService : Service() {
                 val longitude = locationResult.lastLocation.longitude
                 Log.v("LOCATION_UPDATE", "$latitude, $longitude")
                 val addRunnable = Runnable {
-                    DBhelper.locationDAO().insertLocationData(Timestamp(System.currentTimeMillis()).toString(), latitude, longitude)
+                    DBhelper.locationDAO().insertLocationData(System.currentTimeMillis(), latitude, longitude)
                 }
                 val thread = Thread(addRunnable)
                 thread.start()
@@ -109,7 +109,7 @@ class LocationService : Service() {
             return START_NOT_STICKY //시작하기에 충분한 정보가 넘어오지 않은 경우 재시작 없이 서비스 종료
         }
         Log.d(TAG, "starting Location Service...")
-        return super.onStartCommand(intent, flags, startId)
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
