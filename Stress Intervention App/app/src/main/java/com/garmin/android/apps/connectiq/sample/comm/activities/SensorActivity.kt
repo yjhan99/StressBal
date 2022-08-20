@@ -24,6 +24,7 @@ import com.garmin.android.apps.connectiq.sample.comm.R
 import com.garmin.android.apps.connectiq.sample.comm.SensorFactory
 import com.garmin.android.apps.connectiq.sample.comm.adapter.SensorDatasAdapter
 import com.garmin.android.apps.connectiq.sample.comm.Service.LocationService
+import com.garmin.android.apps.connectiq.sample.comm.Service.ScreenService
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -95,62 +96,28 @@ class SensorActivity : AppCompatActivity() {
             } else {
                 Log.e(TAG, "Location Service is not running")
             }
-        }
-
-        /*
-        // Phone usage service
-        //TODO: Not implemented yet
-        else if (datas.toString().equals(getString(R.string.start_pu_update))) {
-            if (!checkForPermission()) {
-                Log.i(TAG, "The user may not allow the access to apps usage. ")
+        } else if (datas.toString().equals("Start Screen Service")){
+            if (isMyServiceRunning(ScreenService::class.java)){
+                Log.e(TAG, "Screen Service is already running")
+            } else {
                 Toast.makeText(
-                    this,
-                    "Failed to retrieve app usage statistics. " +
-                            "You may need to enable access for this app through " +
-                            "Settings > Security > Apps with usage access",
-                    Toast.LENGTH_LONG
+                    applicationContext,
+                    "Start Screen Service..",
+                    Toast.LENGTH_SHORT
                 ).show()
-                startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-            } else {
-//                val usageStats = getAppUsageStats()
-//                showAppUsageStats(usageStats)
-                val recurringWork: PeriodicWorkRequest =
-                    PeriodicWorkRequest.Builder(PhoneUsageWork::class.java, 15, TimeUnit.MINUTES)
-                        .setConstraints(Constraints.Builder()
-                            .setRequiredNetworkType(NetworkType.CONNECTED)
-                            .build()
-                        )
-                        .build()
-                WorkManager.getInstance().enqueueUniquePeriodicWork("phoneUsageDataUpdates", ExistingPeriodicWorkPolicy.KEEP, recurringWork)
-                Toast.makeText(this, "Start to track phone usage", Toast.LENGTH_SHORT).show()
-                Log.d(TAG, "enqueue phone usage data updates work into work manager")
-
+                startService(Intent(this, ScreenService::class.java))
             }
-        } else if(datas.toString().equals(getString(R.string.stop_pu_updates))){
-            WorkManager.getInstance().cancelUniqueWork("phoneUsageDataUpdates")
-            Toast.makeText(this, "Quit to track phone usage", Toast.LENGTH_SHORT).show()
-            Log.d(TAG, "delete phone usage data updates work from work manager")
+        } else if (datas.toString().equals("Stop Screen Service")) {
+            if (isMyServiceRunning(ScreenService::class.java)) {
+                Log.d(TAG, "screen service 중지")
+                Toast.makeText(applicationContext, "Stop Screen Service", Toast.LENGTH_SHORT)
+                    .show()
+                stopService(Intent(this, ScreenService::class.java))
+            } else {
+                Log.e(TAG, "Screen Service is not running")
+            }
         }
 
-        else if (datas.toString().equals(getString(R.string.start_acc_update))) {
-            if (isMyServiceRunning(AccelService::class.java)) {
-                Log.e(TAG, "Acc Service is already running")
-            } else {
-                Toast.makeText(applicationContext, "Start AccService..", Toast.LENGTH_SHORT)
-                    .show()
-                startService(Intent(this, AccelService::class.java))
-            }
-        } else if (datas.toString().equals(getString(R.string.stop_acc_updates))) {
-            if (isMyServiceRunning(AccelService::class.java)) {
-                Log.d(TAG, "acc service 중지")
-                Toast.makeText(applicationContext, "Stop Acc Service", Toast.LENGTH_SHORT)
-                    .show()
-                stopService(Intent(this, AccelService::class.java))
-            } else {
-                Log.e(TAG, "acc Service is not running")
-            }
-        }
-        */
 
     }
 

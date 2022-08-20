@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.activities.SensorActivity
 import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
 import com.garmin.android.apps.connectiq.sample.comm.roomdb.ScreenData
+import java.sql.Timestamp
 
 class ScreenService : Service() {
 
@@ -76,7 +77,7 @@ class ScreenService : Service() {
                     }
                 }
                 val addRunnable = Runnable {
-                    AppDatabase.getInstance(applicationContext).screenDAO().insert(ScreenData(screenType))
+                    AppDatabase.getInstance(applicationContext).screenDAO().insert(System.currentTimeMillis(), screenType)
                 }
                 val thread = Thread(addRunnable)
                 thread.start()

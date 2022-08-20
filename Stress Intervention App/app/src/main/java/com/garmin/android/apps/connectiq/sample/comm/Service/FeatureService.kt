@@ -6,7 +6,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.*
-import android.text.format.Time
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.R
@@ -303,7 +302,7 @@ class FeatureService : Service() {
         val distancedata = distancedataProcessing(currentdistancedata)
 
         //TODO: home, work 추가
-        val tenbftimestamp = Timestamp(System.currentTimeMillis() - 10*60*1000) //10분전 timestamp
+        val tenbftimestamp = System.currentTimeMillis() - 10*60*1000 //10분전 timestamp
         val lastLatitude = AppDatabase.getInstance(this).locationDAO().readLatitudeData(tenbftimestamp)
         val lastLongitude = AppDatabase.getInstance(this).locationDAO().readLongitudeData(tenbftimestamp)
         // select로 읽어오면 어떻게 받는건지 (RoomDAO에서 코드 수정) -> 평균 계산
@@ -311,8 +310,8 @@ class FeatureService : Service() {
         //TODO: screenTime 추가 (혜민)
 
         val addRunnable = Runnable {
-            AppDatabase.getInstance(this).userDAO().insertData(Timestamp(System.currentTimeMillis()), 2, hrvdata,
-                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, false, false, 0.0)
+            AppDatabase.getInstance(this).userDAO().insertData(System.currentTimeMillis(), 2, hrvdata,
+                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, false, false)
         }
         val thread = Thread(addRunnable)
         thread.start()

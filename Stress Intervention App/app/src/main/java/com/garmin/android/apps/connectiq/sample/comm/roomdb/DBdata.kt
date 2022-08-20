@@ -7,21 +7,17 @@ import java.sql.Time
 import java.sql.Timestamp
 
 @Entity
-data class HRVdata(
-    @PrimaryKey val currentTime: Timestamp,
-    @ColumnInfo(name = "HRVdata") val HRVdata: Double
-)
-
-@Entity
-data class Locationdata(
-    @PrimaryKey val currentTime: Timestamp,
+data class LocationData(
+    @PrimaryKey var currentTime: Long,
     @ColumnInfo(name = "LatitudeData") val LatitudeData: Double,
-    @ColumnInfo(name = "LongitudeData") val LongitudeData: Double
-)
+    @ColumnInfo(name = "LongitudeData") val LongitudeData: Double,
+
+    )
 
 @Entity
-data class Userdata(
-    @PrimaryKey val currentTime: Timestamp,
+data class UserData(
+    @PrimaryKey var currentTime: Long,
+
     @ColumnInfo(name = "label") var label: Int?,
     @ColumnInfo(name = "HRV") val HRV: Double?,
     @ColumnInfo(name = "meanX") val meanX: Double?,
@@ -36,13 +32,12 @@ data class Userdata(
     @ColumnInfo(name = "step") val step: Int?,
     @ColumnInfo(name = "distance") val distance: Boolean?,
     @ColumnInfo(name = "home") val home: Boolean?,
-    @ColumnInfo(name = "work") val work: Boolean?
+    @ColumnInfo(name = "work") val work: Boolean?,
+
 )
 
 @Entity
 data class ScreenData(
-    @PrimaryKey val currentTime: Timestamp,
-    @ColumnInfo var eventType: String
-){
-    constructor(eventType: String): this(Timestamp(System.currentTimeMillis()) ,eventType)
-}
+    @PrimaryKey var currentTime: Long,
+    @ColumnInfo var eventType: String,
+)

@@ -5,31 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-/*
-@Database(entities = [HRVdata::class, PhoneUsageData::class, Locationdata::class, Accdata::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun roomDAO(): RoomDAO
-
-    companion object {
-
-        // For Singleton instantiation
-        @Volatile
-        private var instance: AppDatabase? = null
-
-        fun getInstance(context: Context): AppDatabase {
-            return instance ?: synchronized(this) {
-                instance ?: buildDatabase(context).also { instance = it }
-            }
-        }
-
-        private fun buildDatabase(context: Context) =
-            Room.databaseBuilder(context, AppDatabase::class.java, "UserDataDB")
-                .build()
-    }
-}
-*/
-
-@Database(entities = [Userdata::class, Locationdata::class, ScreenData::class], version = 1)
+@Database(entities = [UserData::class, LocationData::class, ScreenData::class], version = 1)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun userDAO(): UserDAO
     abstract fun locationDAO(): LocationDAO
