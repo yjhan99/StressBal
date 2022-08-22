@@ -11,7 +11,5 @@ object Constants {
 
     const val EMA_SERVICE_ID = 176
 
-    const val PU_SERVICE_ID = 177
-    const val ACTION_START_PU_SERVICE = "startPUService"
-    const val ACTION_STOP_PU_SERVICE = "stopPUService"
+    const val SCREEN_SERVICE_ID = 177
 }

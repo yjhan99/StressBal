@@ -13,6 +13,12 @@ data class Locationdata(
 )
 
 @Entity
+data class ScreenData(
+    @PrimaryKey var currentTime: Long,
+    @ColumnInfo var eventType: String,
+)
+
+@Entity
 data class Userdata(
     @PrimaryKey val currentTime: Long,
     @ColumnInfo(name = "label") var label: Int?,
@@ -36,5 +42,5 @@ data class Userdata(
 @Entity
 data class Labeldata(
     @PrimaryKey val currentTime: Long,
-    @ColumnInfo(name = "label") var label: Int?
+    @ColumnInfo(name = "label") var label: Int
 )

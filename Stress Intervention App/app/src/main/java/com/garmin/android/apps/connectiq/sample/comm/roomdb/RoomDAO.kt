@@ -13,7 +13,7 @@ interface UserDAO {
     @Query("SELECT step FROM Userdata WHERE currentTime = (SELECT MAX(currentTime) FROM Userdata)")
     fun readLastStep(): Int
 
-    @Query("UPDATE Userdata SET label = :emaResult WHERE currentTime >= :minus10Time OR currentTime <= :plus10Time")
+    @Query("UPDATE Userdata SET label = (:emaResult) WHERE currentTime >= (:minus10Time) OR currentTime <= (:plus10Time)")
     fun updateEMAResult(emaResult:Int, minus10Time: Long, plus10Time: Long)
 }
 
@@ -25,15 +25,24 @@ interface LocationDAO {
     @Query("DELETE FROM LOCATIONDATA WHERE currentTime = :currentTime")
     fun deleteLocationData(currentTime: Long)
 
-    @Query("SELECT LatitudeData FROM Locationdata WHERE currentTime > (:currentTime)")
-    fun readLatitudeData(currentTime: Long): Array<Double>
+    @Query("SELECT LatitudeData FROM Locationdata WHERE currentTime > (:lastTime)")
+    fun readLatitudeData(lastTime: Long): Array<Double>
 
-    @Query("SELECT LongitudeData FROM Locationdata WHERE currentTime > (:currentTime)")
-    fun readLongitudeData(currentTime: Long): Array<Double>
+    @Query("SELECT LongitudeData FROM Locationdata WHERE currentTime > (:lastTime)")
+    fun readLongitudeData(lastTime: Long): Array<Double>
+}
+
+@Dao
+interface ScreenDAO {
+    @Query("INSERT INTO ScreenData VALUES (:currentTime, :screenType)")
+    fun insert(currentTime: Long, screenType: String)
 }
 
 @Dao
 interface LabelDAO {
     @Query("INSERT INTO Labeldata VALUES (:currentTime, :label)")
     fun insertLabelData(currentTime: Long, label: Int)
+
+    @Query("SELECT * FROM Labeldata WHERE currentTime > (:lastTime)")
+    fun readLabelData(lastTime: Long): Array<Labeldata>
 }

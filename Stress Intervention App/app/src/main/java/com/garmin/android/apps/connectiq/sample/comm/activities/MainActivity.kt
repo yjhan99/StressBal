@@ -19,16 +19,20 @@ import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.garmin.android.apps.connectiq.sample.comm.R
 import com.garmin.android.apps.connectiq.sample.comm.Service.EMAService
 import com.garmin.android.apps.connectiq.sample.comm.Service.FeatureService
+import com.garmin.android.apps.connectiq.sample.comm.UpdateWorker
 import com.garmin.android.apps.connectiq.sample.comm.adapter.IQDeviceAdapter
-import com.garmin.android.apps.connectiq.sample.comm.broadcastReceiver.EMAbroadcastReceiver
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
 import com.garmin.android.connectiq.exception.InvalidStateException
 import com.garmin.android.connectiq.exception.ServiceUnavailableException
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
@@ -93,6 +97,12 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "No intervention is running", Toast.LENGTH_SHORT).show()
             }
         }
+
+        val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(15, TimeUnit.MINUTES)
+            .setInitialDelay(1, TimeUnit.MINUTES)
+            .build()
+        val workManager = WorkManager.getInstance(application)
+        workManager.enqueueUniquePeriodicWork("UpdateWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)
     }
 
     public override fun onResume() {
