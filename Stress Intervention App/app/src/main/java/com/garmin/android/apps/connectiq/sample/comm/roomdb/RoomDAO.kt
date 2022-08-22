@@ -25,9 +25,12 @@ interface LocationDAO {
     @Query("DELETE FROM LOCATIONDATA WHERE currentTime = :currentTime")
     fun deleteLocationData(currentTime: Long)
 
-    @Query("SELECT LatitudeData FROM Locationdata WHERE currentTime > :currentTime")
+    @Query("SELECT LatitudeData FROM Locationdata WHERE currentTime > (:currentTime)")
     fun readLatitudeData(currentTime: Long): Array<Double>
 
-    @Query("SELECT LongitudeData FROM Locationdata WHERE currentTime > :currentTime")
+    @Query("SELECT LongitudeData FROM Locationdata WHERE currentTime > (:currentTime)")
     fun readLongitudeData(currentTime: Long): Array<Double>
+
+    @Query("SELECT LatitudeData FROM Locationdata")
+    fun selectall(): Array<Double>
 }

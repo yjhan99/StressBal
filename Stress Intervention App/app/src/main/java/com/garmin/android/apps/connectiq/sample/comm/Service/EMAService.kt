@@ -62,12 +62,14 @@ class EMAService: Service() {
             Log.d(TAG, "there is no intent")
             return START_NOT_STICKY
         } else {
-            timer.scheduleAtFixedRate(timerTask, 600000, 7200000)
+            Log.d(TAG, "EMA service started...")
+            timer.scheduleAtFixedRate(timerTask, 10000, 3000)
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
     private fun sendEMANotification() {
+        //notification 보내기
         val notificationIntent = Intent(this, EMAActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
 
@@ -79,6 +81,7 @@ class EMAService: Service() {
             .setGroup(GROUP_KEY_NOTIFY)
 
         notificationManager.notify(1, builder.build())
+        Log.d(TAG, "Notification Sent")
 
         //화면 켜기
         val pm = getSystemService(POWER_SERVICE) as PowerManager

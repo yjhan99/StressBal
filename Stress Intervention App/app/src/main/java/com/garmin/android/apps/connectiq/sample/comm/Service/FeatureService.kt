@@ -301,6 +301,7 @@ class FeatureService : Service() {
 
     private fun dataStoring(rawData: String) {
         // DB에 한번에 저장하는 함수
+        Log.d(TAG, "Start data processing")
         sensorData = parseSensorData(rawData).first
         activityData = parseSensorData(rawData).second
 
