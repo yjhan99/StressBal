@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".activities.ESMActivity">
+    tools:context=".activities.EMAActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/esm_toolbar"

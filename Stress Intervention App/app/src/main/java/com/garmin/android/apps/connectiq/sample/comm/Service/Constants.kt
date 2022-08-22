@@ -9,9 +9,7 @@ object Constants {
     const val ACTION_START_LOCATION_SERVICE = "startLocationService"
     const val ACTION_STOP_LOCATION_SERVICE = "stopLocationService"
 
-    const val ACC_SERVICE_ID = 176
-    const val ACTION_START_ACC_SERVICE = "startAccService"
-    const val ACTION_STOP_ACC_SERVICE = "stopAccService"
+    const val EMA_SERVICE_ID = 176
 
     const val PU_SERVICE_ID = 177
     const val ACTION_START_PU_SERVICE = "startPUService"

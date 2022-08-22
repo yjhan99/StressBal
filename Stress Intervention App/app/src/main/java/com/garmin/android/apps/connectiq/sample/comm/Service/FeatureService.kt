@@ -65,7 +65,7 @@ class FeatureService : Service() {
             notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         } else {
-            //TODO: Oreo 이하에서의 처리
+            //Oreo 이하에서의 처리
         }
 
         val builder = NotificationCompat.Builder(this, "intervention_channel")
@@ -343,6 +343,7 @@ class FeatureService : Service() {
         if (workDist < 0.1) {
             workdata = true
         }
+
         //TODO: screenTime 추가 (혜민)
 
         val addRunnable = Runnable {
@@ -352,41 +353,5 @@ class FeatureService : Service() {
         val thread = Thread(addRunnable)
         thread.start()
     }
-
-    /*
-    private fun giveFeedback(rawDatas: String){
-        if(isLowerHRV(dataProcessing(parseSensorData(rawDatas)))){
-            //notification 설정
-            val notificationIntent = Intent(this, InterventionActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
-
-            val builder = NotificationCompat.Builder(this, "intervention_channel")
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_wind)
-                .setContentText("Hey! Take a Breath:)")
-                .setContentIntent(pendingIntent)
-                .setGroup(GROUP_KEY_NOTIFY)
-
-            notificationManager.notify(2, builder.build())
-
-            val pm = getSystemService(POWER_SERVICE) as PowerManager
-            val wLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE, "myapp:TAG")
-            if(wLock != null && !wLock.isHeld){
-                wLock.acquire(3*1000L /*3 seconds*/)
-            }
-
-            //진동 설정(0.5초 진동)
-            val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                vibrator.vibrate(500)
-            }
-
-        } else {
-            Log.d(TAG, "No feedback")
-        }
-    }
-    */
 
 }

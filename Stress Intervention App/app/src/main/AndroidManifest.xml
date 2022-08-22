@@ -24,6 +24,11 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+        <receiver
+            android:name=".broadcastReceiver.EMAbroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
         <service
             android:name=".Service.LocationService"
             android:enabled="true"
@@ -47,7 +52,7 @@
             android:launchMode="singleTask"
             android:taskAffinity="" />
         <activity
-            android:name=".activities.ESMActivity"
+            android:name=".activities.EMAActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:taskAffinity="" />
