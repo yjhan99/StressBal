@@ -24,14 +24,11 @@ import com.garmin.android.apps.connectiq.sample.comm.Service.EMAService
 import com.garmin.android.apps.connectiq.sample.comm.Service.FeatureService
 import com.garmin.android.apps.connectiq.sample.comm.adapter.IQDeviceAdapter
 import com.garmin.android.apps.connectiq.sample.comm.broadcastReceiver.EMAbroadcastReceiver
-import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
 import com.garmin.android.connectiq.exception.InvalidStateException
 import com.garmin.android.connectiq.exception.ServiceUnavailableException
 import java.util.*
-import kotlin.math.pow
-import kotlin.math.round
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,17 +41,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: IQDeviceAdapter
     private lateinit var btnControl: Button
     private var isSdkReady = false
-
-    private lateinit var btnTrial: Button
-    private val exampleData =
-        "{30s=[11], 30d=[8], 30x=[-191, -190, -292, -237, -278, -233, -209, -147, -36, 40, 74, 193, 234, 115, 18, -7, 9, 0, 0, 0, -2, -2, -1, -3, -3, -3, 0, -3, -3, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0], 30y=[573, 566, 572, 570, 571, 570, 574, 571, 575, 572, 574, 573, 574, 573, 571, 575, 570, 574, 573, 576, 569, 572, 574, 573, 574, 572, 567, 540, 630, 628, 614, 563, 796, 815, 621, 540, 411, 281, 389, 437, 449, 432], 30i=[865, 915, 924, 921, 905, 860, 843, 884, 853, 857, 864, 865, 882, 900, 916, 922, 931, 954], 30z=[-861, -862, -861, -862, -861, -861, -861, -860, -864, -863, -861, -862, -1031, -901, -864, -868, -857, -855, -860, -854, -859, -860]}"
-    private var dataMap1: MutableMap<String, MutableList<Int>> = mutableMapOf()
-    private var dataMap2: MutableMap<String, Int> = mutableMapOf()
-    private var sensorData: Map<String, MutableList<Int>> = mutableMapOf()
-    private var activityData: Map<String, Int> = mutableMapOf()
-    private var lastStepData: Int = -1
-    private lateinit var DBhelper: AppDatabase
-
 
     private lateinit var toolbar: Toolbar
 
@@ -107,32 +93,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "No intervention is running", Toast.LENGTH_SHORT).show()
             }
         }
-
-        btnTrial = findViewById(R.id.button)
-
-        btnTrial.setOnClickListener{
-            dataStoring(exampleData)
-        }
-
-        DBhelper = AppDatabase.getInstance(this)
-
-        /*
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(this,EMAbroadcastReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            this, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val triggerTime = Calendar.getInstance()
-        triggerTime.set(Calendar.HOUR_OF_DAY, triggerTime.get(Calendar.HOUR_OF_DAY) + 2)
-        triggerTime.set(Calendar.MINUTE, 0)
-        triggerTime.set(Calendar.SECOND, 0)
-        triggerTime.set(Calendar.MILLISECOND, 0)
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, triggerTime.timeInMillis, AlarmManager.INTERVAL_HOUR, pendingIntent)
-        */
     }
 
     public override fun onResume() {
@@ -264,8 +224,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun setEmptyState(text: String) {
         findViewById<TextView>(android.R.id.empty)?.text = text
     }
@@ -279,249 +237,4 @@ class MainActivity : AppCompatActivity() {
         }
         return false
     }
-
-    private fun parseSensorData(rawDatas: String): Pair<Map<String, MutableList<Int>>, Map<String, Int>> {
-        try {
-            var dataName: String = String()
-            var dataList = rawDatas.split("=", "], ")
-            dataList.forEach{
-                if (it.contains("i") || it.contains("x") || it.contains("y") || it.contains("z") || it.contains("s") || it.contains("d")) {
-                    dataName = it.last().toString()
-                    //return@forEach
-                }
-                else {
-                    if (it.contains(",")) {
-                        if (it.contains("]")) {
-                            dataMap1.put(
-                                dataName,
-                                it.substring(it.indexOf("[") + 1, it.indexOf("]")).replace(" ", "").split(",").map{it.toInt()} as MutableList<Int>)
-                        }
-                        else{
-                            dataMap1.put(
-                                dataName,
-                                it.substring(it.indexOf("[") + 1).replace(" ", "").split(",").map{it.toInt()} as MutableList<Int>)
-                        }
-                    }
-                    else{
-                        if(it.contains("]")) {
-                            dataMap2.put(
-                                dataName,
-                                it.substring(it.indexOf("[") + 1, it.indexOf("]")).toInt())
-                        }
-                        else {
-                            dataMap2.put(
-                                dataName,
-                                it.substring(it.indexOf(("[")) + 1).toInt())
-                        }
-                    }
-                }
-            }
-            return Pair(dataMap1, dataMap2)
-        } catch (e: IndexOutOfBoundsException) {
-            Log.e(TAG, e.toString())
-        } catch (e: NumberFormatException){
-            Log.e(TAG, e.toString())
-        }
-        return Pair(mapOf("i" to mutableListOf(), "x" to mutableListOf(), "y" to mutableListOf(), "z" to mutableListOf()),
-            mapOf("s" to 0, "d" to 0))
-    }
-
-
-    private fun ibidataProcessing(IBIdata: MutableList<Int>?): Double {
-        var receivedHRVdata = 0.0
-        var realHRVdata: Double
-        if(IBIdata.isNullOrEmpty()){
-            realHRVdata = 0.0
-            return realHRVdata
-        }
-        else{
-            for(i in 0 until (IBIdata.size-1)){
-                receivedHRVdata += (IBIdata[i+1] - IBIdata[i]).toDouble().pow(2.0)
-            }
-            if(IBIdata.size > 1){
-                receivedHRVdata /= (IBIdata.size-1)
-            }
-            realHRVdata = Math.sqrt(receivedHRVdata)
-            return round(realHRVdata*100)/100
-        }
-    }
-
-    private fun accdataProcessing(ACCdata: MutableList<Int>?): Triple<Double, Double, Double> {
-        val meandata: Double
-        val stddata: Double
-        val magdata: Double
-        if(ACCdata.isNullOrEmpty()){
-            return Triple(0.0, 0.0, 0.0)
-        }
-        else{
-            meandata = round(ACCdata.average()*100/100)
-            stddata = calculateSD(ACCdata)
-            magdata = calculateMAG(ACCdata)
-            return Triple(meandata, stddata, magdata)
-        }
-    }
-
-    fun calculateSD(dataList: MutableList<Int>): Double {
-        var sum = 0.0
-        var standardDeviation = 0.0
-        for (num in dataList) {
-            sum += num
-        }
-        val mean = sum / dataList.size
-        for (num in dataList) {
-            standardDeviation += Math.pow(num - mean, 2.0)
-        }
-        return round(Math.sqrt(standardDeviation / dataList.size)*100/100)
-    }
-
-    fun calculateMAG(dataList: MutableList<Int>): Double {
-        var sum = 0.0
-        var mag: Double
-        for (num in dataList) {
-            sum += num.toDouble().pow(2)
-        }
-        mag = Math.sqrt(sum)
-        return round(mag*100/100)
-    }
-
-    private fun stepdataProcessing(currentstepData: Int?): Int {
-        var stepdata = 0
-        if(currentstepData == null){
-            return 0
-        }
-        else{
-            if(lastStepData == -1) {
-                lastStepData = currentstepData
-                return 0
-            }
-            stepdata = currentstepData - lastStepData
-            /*val addRunnable1 = Runnable { lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep() }
-            val thread1 = Thread(addRunnable1)
-            thread1.start()
-            */
-            if(stepdata < 0) {
-                lastStepData = 0
-                return 0
-            }
-            else {
-                lastStepData = currentstepData
-                return stepdata
-            }
-        }
-        /*
-        val addRunnable2 = Runnable { lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep() }
-        val thread2 = Thread(addRunnable2)
-        thread2.start()
-        */
-    }
-
-    private fun distancedataProcessing(currentdistanceData: Int?): Boolean {
-        var distancechange = 0
-        var lastDistanceData = 0
-        if(currentdistanceData == null){
-            return false
-        }
-        else{
-            distancechange = currentdistanceData - lastDistanceData
-            lastDistanceData = currentdistanceData
-            if(distancechange > 1000) {
-                return true
-            }
-            return false
-        }
-    }
-
-    private fun haversineHome(avgLatitude: Double, avgLongitude: Double): Double {
-        val homeLong = 36.366949
-        val homeLat = 127.357542
-        val dLong = Math.toRadians(avgLatitude - homeLong)
-        val dLat = Math.toRadians(avgLongitude - homeLat)
-        val earthRadiusKm = 6372.8
-
-        val a = Math.pow(Math.sin(dLat / 2), 2.toDouble()) + Math.pow(Math.sin(dLong / 2), 2.toDouble()) * Math.cos(homeLat) * Math.cos(avgLatitude);
-        val c = 2 * Math.asin(Math.sqrt(a));
-        return earthRadiusKm * c
-    }
-
-    private fun haversineWork(avgLatitude: Double, avgLongitude: Double): Double {
-        val homeLong = 36.374233
-        val homeLat = 127.365749
-        val dLong = Math.toRadians(avgLatitude - homeLong)
-        val dLat = Math.toRadians(avgLongitude - homeLat)
-        val earthRadiusKm = 6372.8
-
-        val a = Math.pow(Math.sin(dLat / 2), 2.toDouble()) + Math.pow(Math.sin(dLong / 2), 2.toDouble()) * Math.cos(homeLat) * Math.cos(avgLatitude);
-        val c = 2 * Math.asin(Math.sqrt(a));
-        return earthRadiusKm * c
-    }
-
-    private fun dataStoring(rawData: String) {
-        // DB에 한번에 저장하는 함수
-        sensorData = parseSensorData(rawData).first
-        activityData = parseSensorData(rawData).second
-        Log.d(TAG, "Start data processing")
-
-        val ibidata = sensorData.get("i")
-        val hrvdata = ibidataProcessing(ibidata)
-        Log.d(TAG, hrvdata.toString())
-
-        val accXdata = sensorData.get("x")
-        val meanXdata = accdataProcessing(accXdata).first
-        val stdXdata = accdataProcessing(accXdata).second
-        val magXdata = accdataProcessing(accXdata).third
-        val accYdata = sensorData.get("y")
-        val meanYdata = accdataProcessing(accYdata).first
-        val stdYdata = accdataProcessing(accYdata).second
-        val magYdata = accdataProcessing(accYdata).third
-        val accZdata = sensorData.get("z")
-        val meanZdata = accdataProcessing(accZdata).first
-        val stdZdata = accdataProcessing(accZdata).second
-        val magZdata = accdataProcessing(accZdata).third
-        Log.d(TAG, meanXdata.toString())
-        Log.d(TAG, stdYdata.toString())
-        Log.d(TAG, magZdata.toString())
-
-        val currentstepdata = activityData.get("s")
-        val stepdata = stepdataProcessing(currentstepdata)
-        Log.d(TAG, stepdata.toString())
-
-        val currentdistancedata = activityData.get("d")
-        val distancedata = distancedataProcessing(currentdistancedata)
-        Log.d(TAG, distancedata.toString())
-
-        val tenbftimestamp = System.currentTimeMillis() - 10*60*1000 //10분전 timestamp
-        Log.d(TAG, "${tenbftimestamp}")
-        var lastLatitude = arrayOf<Double>()
-        var lastLongitude = arrayOf<Double>()
-        lastLatitude = AppDatabase.getInstance(this).locationDAO().readLatitudeData(tenbftimestamp)
-        lastLongitude = AppDatabase.getInstance(this).locationDAO().readLongitudeData(tenbftimestamp)
-        val avgLatitude = lastLatitude.average()
-        Log.d(TAG, "${avgLatitude}")
-        val avgLongitude = lastLongitude.average()
-        Log.d(TAG, "${avgLongitude}")
-        //home과의 거리
-        val homeDist = haversineHome(avgLatitude, avgLongitude)
-        var homedata = false
-        if (homeDist < 0.1) {
-            homedata = true
-        }
-        //work와의 거리
-        val workDist = haversineWork(avgLatitude, avgLongitude)
-        var workdata = false
-        if (workDist < 0.1) {
-            workdata = true
-        }
-        Log.d(TAG, homedata.toString())
-        Log.d(TAG, workdata.toString())
-        
-        //TODO: screenTime 추가 (혜민)
-
-        val addRunnable1 = Runnable {
-            DBhelper.userDAO().insertData(System.currentTimeMillis(), 2, hrvdata,
-                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, homedata, workdata, 0.0)
-        }
-        val thread1 = Thread(addRunnable1)
-        thread1.start()
-    }
-
 }

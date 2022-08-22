@@ -34,7 +34,6 @@ class EMAActivity: AppCompatActivity() {
         var currentTime = System.currentTimeMillis()
         var minus10Time = currentTime - 10*60*1000
         var plus10Time = currentTime + 10*60*1000
-        //TODO 생각해보니 10분후의 데이터는 넣지 못함
 
         if (r_btn1.isChecked() || r_btn2.isChecked() || r_btn3.isChecked()) {
             emaResult = 0

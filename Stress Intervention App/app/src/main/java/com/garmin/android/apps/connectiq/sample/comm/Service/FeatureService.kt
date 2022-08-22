@@ -9,20 +9,21 @@ import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm.R
+import com.garmin.android.apps.connectiq.sample.comm.activities.MainActivity
 import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQApp
 import com.garmin.android.connectiq.IQDevice
 import com.garmin.android.connectiq.exception.InvalidStateException
 import java.lang.Math.sqrt
-import java.sql.Timestamp
 import kotlin.math.pow
+import kotlin.math.round
 
 
 class FeatureService : Service() {
 
     companion object {
-        private const val TAG = "InterventionService"
+        private const val TAG = "FeatureService"
         private const val EXTRA_IQ_DEVICE = "IQDevice"
         private const val COMM_WATCH_ID = "5d80e574-aa63-4fae-8dc0-f58656071277"
 
@@ -44,8 +45,9 @@ class FeatureService : Service() {
     private var dataMap2: MutableMap<String, Int> = mutableMapOf()
     private var sensorData: Map<String, MutableList<Int>> = mutableMapOf()
     private var activityData: Map<String, Int> = mutableMapOf()
-
     private var lastStepData: Int = -1
+    private var lastDistanceData: Int = -1
+    private lateinit var DBhelper: AppDatabase
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -73,6 +75,8 @@ class FeatureService : Service() {
             .setGroup(GROUP_KEY_NOTIFY)
             .setAutoCancel(false)
         startForeground(Constants.INTERVENTION_SERVICE_ID, builder.build())
+
+        DBhelper = AppDatabase.getInstance(this)
 
     }
 
@@ -194,7 +198,7 @@ class FeatureService : Service() {
                 receivedHRVdata /= (IBIdata.size-1)
             }
             realHRVdata = sqrt(receivedHRVdata)
-            return realHRVdata
+            return round(realHRVdata*100)/100
         }
     }
 
@@ -206,7 +210,7 @@ class FeatureService : Service() {
             return Triple(0.0, 0.0, 0.0)
         }
         else{
-            meandata = ACCdata.average()
+            meandata = round(ACCdata.average()*100)/100
             stddata = calculateSD(ACCdata)
             magdata = calculateMAG(ACCdata)
             return Triple(meandata, stddata, magdata)
@@ -223,7 +227,7 @@ class FeatureService : Service() {
         for (num in dataList) {
             standardDeviation += Math.pow(num - mean, 2.0)
         }
-        return sqrt(standardDeviation / dataList.size)
+        return round(sqrt(standardDeviation / dataList.size)*100)/100
     }
 
     fun calculateMAG(dataList: MutableList<Int>): Double {
@@ -233,7 +237,7 @@ class FeatureService : Service() {
             sum += num.toDouble().pow(2)
         }
         mag = sqrt(sum)
-        return mag
+        return round(mag*100)/100
     }
 
     private fun stepdataProcessing(currentstepData: Int?): Int {
@@ -247,31 +251,35 @@ class FeatureService : Service() {
                 return 0
             }
             stepdata = currentstepData - lastStepData
-            lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep()
             if(stepdata < 0) {
+                lastStepData = 0
                 return 0
             }
             else {
+                lastStepData = currentstepData
                 return stepdata
             }
         }
-        lastStepData = AppDatabase.getInstance(this).userDAO().readLastStep()
-        return stepdata
     }
 
     private fun distancedataProcessing(currentdistanceData: Int?): Boolean {
         var distancechange = 0
-        var lastDistanceData = 0
         if(currentdistanceData == null){
             return false
         }
         else{
-            distancechange = currentdistanceData - lastDistanceData
-            lastDistanceData = currentdistanceData
-            if(distancechange > 1000) {
-                return true
+            if(lastDistanceData == -1) {
+                lastDistanceData = currentdistanceData
+                return false
             }
-            return false
+            else {
+                distancechange = currentdistanceData - lastDistanceData
+                lastDistanceData = currentdistanceData
+                if(distancechange > 1000) {
+                    return true
+                }
+                return false
+            }
         }
     }
 
@@ -353,6 +361,9 @@ class FeatureService : Service() {
         }
         val thread = Thread(addRunnable)
         thread.start()
+        Log.d(TAG, "Time: ${System.currentTimeMillis().toString()} HRV: ${hrvdata} meanX: ${meanXdata} stdX: ${stdXdata} magX: ${magXdata} " +
+                "meanY: ${meanYdata} stdY: ${stdYdata} magZ: ${magZdata} meanZ: ${meanZdata} stdZ: ${stdZdata} magX: ${magZdata} " +
+                "step: ${stepdata} distance: ${distancedata} home: ${homedata} work: ${workdata} screen: 0.0")
     }
 
 }

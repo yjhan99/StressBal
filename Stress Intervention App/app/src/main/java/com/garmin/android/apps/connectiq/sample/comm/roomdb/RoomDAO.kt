@@ -30,7 +30,4 @@ interface LocationDAO {
 
     @Query("SELECT LongitudeData FROM Locationdata WHERE currentTime > (:currentTime)")
     fun readLongitudeData(currentTime: Long): Array<Double>
-
-    @Query("SELECT LatitudeData FROM Locationdata")
-    fun selectall(): Array<Double>
 }

@@ -63,7 +63,8 @@ class EMAService: Service() {
             return START_NOT_STICKY
         } else {
             Log.d(TAG, "EMA service started...")
-            timer.scheduleAtFixedRate(timerTask, 10000, 3000)
+            //timer.scheduleAtFixedRate(timerTask, 7200000, 7200000)
+            timer.scheduleAtFixedRate(timerTask, 10000, 20000)
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -76,7 +77,7 @@ class EMAService: Service() {
         val builder = NotificationCompat.Builder(this, "ema_channel")
             .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_wind)
-            .setContentText("Please")
+            .setContentText("Please answer the question")
             .setContentIntent(pendingIntent)
             .setGroup(GROUP_KEY_NOTIFY)
 
@@ -109,39 +110,4 @@ class EMAService: Service() {
         timer.cancel()
     }
 
-    /*
-    private fun giveFeedback(rawDatas: String){
-        if(isLowerHRV(dataProcessing(parseSensorData(rawDatas)))){
-            //notification 설정
-            val notificationIntent = Intent(this, InterventionActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
-
-            val builder = NotificationCompat.Builder(this, "intervention_channel")
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_wind)
-                .setContentText("Hey! Take a Breath:)")
-                .setContentIntent(pendingIntent)
-                .setGroup(GROUP_KEY_NOTIFY)
-
-            notificationManager.notify(2, builder.build())
-
-            val pm = getSystemService(POWER_SERVICE) as PowerManager
-            val wLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE, "myapp:TAG")
-            if(wLock != null && !wLock.isHeld){
-                wLock.acquire(3*1000L /*3 seconds*/)
-            }
-
-            //진동 설정(0.5초 진동)
-            val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                vibrator.vibrate(500)
-            }
-
-        } else {
-            Log.d(TAG, "No feedback")
-        }
-    }
-    */
 }
