@@ -36,6 +36,12 @@ interface LocationDAO {
 interface ScreenDAO {
     @Query("INSERT INTO ScreenData VALUES (:currentTime, :screenType)")
     fun insert(currentTime: Long, screenType: String)
+
+    @Query("SELECT eventType FROM ScreenData WHERE currentTime = (SELECT MAX(currentTime) FROM Userdata) ")
+    fun readRecentScreenData(): String
+
+    @Query("SELECT * FROM ScreenData WHERE currentTime > (:lastTime)")
+    fun readScreenData(lastTime: Long): Array<ScreenData>
 }
 
 @Dao

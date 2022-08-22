@@ -1,7 +1,10 @@
 package com.garmin.android.apps.connectiq.sample.comm.activities
 
+import android.graphics.Color
 import android.os.Bundle
+import android.widget.Button
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -16,7 +19,10 @@ class EMAActivity: AppCompatActivity() {
     private lateinit var r_btn4: RadioButton
     private lateinit var r_btn5: RadioButton
 
+    private lateinit var r_group: RadioGroup
     private var emaResult = 2
+
+    private lateinit var submit_btn: Button
 
     private lateinit var DBhelper: AppDatabase
 
@@ -34,23 +40,44 @@ class EMAActivity: AppCompatActivity() {
         r_btn4 = findViewById(R.id.rg_btn4)
         r_btn5 = findViewById(R.id.rg_btn5)
 
+        r_group = findViewById(R.id.radioGroup)
+        submit_btn = findViewById(R.id.subimit_btn)
+
         DBhelper = AppDatabase.getInstance(this)
 
-        var currentTime = System.currentTimeMillis()
-
-        if (r_btn1.isChecked() || r_btn2.isChecked() || r_btn3.isChecked()) {
-            //Not stressed
-            emaResult = 0
-            val addRunnable = Runnable {
-                DBhelper.labelDAO().insertLabelData(System.currentTimeMillis(), emaResult)
+        r_group.setOnCheckedChangeListener{ group, checkedId ->
+            when(checkedId) {
+                R.id.rg_btn1 -> {
+                    emaResult = 0
+                    r_btn1.setTextColor(Color.parseColor("#ff7575"))
+                }
+                R.id.rg_btn2 -> {
+                    emaResult = 0
+                    r_btn2.setTextColor(Color.parseColor("#ff7575"))
+                }
+                R.id.rg_btn3 -> {
+                    emaResult = 0
+                    r_btn3.setTextColor(Color.parseColor("#ff7575"))
+                }
+                R.id.rg_btn4 -> {
+                    emaResult = 1
+                    r_btn4.setTextColor(Color.parseColor("#ff7575"))
+                }
+                R.id.rg_btn5 -> {
+                    emaResult = 1
+                    r_btn5.setTextColor(Color.parseColor("#ff7575"))
+                }
             }
-            val thread = Thread(addRunnable)
-            thread.start()
-            Toast.makeText(applicationContext, "Your answer is stored...", Toast.LENGTH_SHORT).show()
         }
-        else {
-            //Stressed
-            emaResult = 1
+
+        submit_btn.setOnClickListener {
+            r_group.clearCheck()
+            r_btn1.setTextColor(Color.parseColor("#454545"))
+            r_btn2.setTextColor(Color.parseColor("#454545"))
+            r_btn3.setTextColor(Color.parseColor("#454545"))
+            r_btn4.setTextColor(Color.parseColor("#454545"))
+            r_btn5.setTextColor(Color.parseColor("#454545"))
+
             val addRunnable = Runnable {
                 DBhelper.labelDAO().insertLabelData(System.currentTimeMillis(), emaResult)
             }

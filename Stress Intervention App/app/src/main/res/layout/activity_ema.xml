@@ -61,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingTop="90dp"
+        android:paddingTop="60dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="parent"
@@ -117,5 +117,21 @@
             android:background="@drawable/esm_button"
             android:button="@android:color/transparent"/>
     </RadioGroup>
+
+    <Button
+        android:id="@+id/subimit_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ema_submit_button"
+        android:outlineProvider="none"
+        android:text="SUBMIT RESULT"
+        android:textColor="#454545"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/radioGroup"
+        app:layout_constraintTop_toBottomOf="@+id/esm_information"
+        android:layout_marginTop="300dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -64,7 +64,7 @@ class EMAService: Service() {
         } else {
             Log.d(TAG, "EMA service started...")
             //timer.scheduleAtFixedRate(timerTask, 7200000, 7200000)
-            timer.scheduleAtFixedRate(timerTask, 10000, 20000)
+            timer.scheduleAtFixedRate(timerTask, 10000, 300000)
         }
         return super.onStartCommand(intent, flags, startId)
     }

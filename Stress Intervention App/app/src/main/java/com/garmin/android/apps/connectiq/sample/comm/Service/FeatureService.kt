@@ -355,17 +355,43 @@ class FeatureService : Service() {
             workdata = true
         }
 
-        //TODO: screenTime 추가 (혜민)
+        //screentime 계산
+        val screendata = AppDatabase.getInstance(this).screenDAO().readScreenData(tenbftimestamp)
+        var beforetime = tenbftimestamp
+        var aftertime = tenbftimestamp
+        var screentime = 0.0
+        if (screendata.isNullOrEmpty()) {
+            val recentScreenData = AppDatabase.getInstance(this).screenDAO().readRecentScreenData()
+            if (recentScreenData == "Screen On") {
+                screentime = 300.0
+            }
+            else if (recentScreenData == "Screen Off") {
+                screentime = 0.0
+            }
+        } else {
+            screendata.forEach {
+                if (it.eventType == "Screen On") {
+                    beforetime = it.currentTime
+                } else if (it.eventType == "Screen Off") {
+                    aftertime = it.currentTime
+                    screentime += aftertime - beforetime
+                }
+            }
+            if (screendata.last().eventType == "Screen On") {
+                screentime += System.currentTimeMillis() - beforetime
+            }
+            screentime = screentime/1000
+        }
 
         val addRunnable = Runnable {
             AppDatabase.getInstance(this).userDAO().insertData(System.currentTimeMillis(), 2, hrvdata,
-                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, homedata, workdata, 0.0)
+                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, homedata, workdata, screentime)
         }
         val thread = Thread(addRunnable)
         thread.start()
         Log.d(TAG, "Time: ${System.currentTimeMillis().toString()} HRV: ${hrvdata} meanX: ${meanXdata} stdX: ${stdXdata} magX: ${magXdata} " +
                 "meanY: ${meanYdata} stdY: ${stdYdata} magZ: ${magZdata} meanZ: ${meanZdata} stdZ: ${stdZdata} magX: ${magZdata} " +
-                "step: ${stepdata} distance: ${distancedata} home: ${homedata} work: ${workdata} screen: 0.0")
+                "step: ${stepdata} distance: ${distancedata} home: ${homedata} work: ${workdata} screen: ${screentime}")
     }
 
 }
