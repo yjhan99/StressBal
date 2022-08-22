@@ -76,7 +76,7 @@ class EMAService: Service() {
 
         val builder = NotificationCompat.Builder(this, "ema_channel")
             .setAutoCancel(true)
-            .setSmallIcon(R.drawable.ic_wind)
+            .setSmallIcon(R.drawable.ic_ema)
             .setContentText("Please answer the question")
             .setContentIntent(pendingIntent)
             .setGroup(GROUP_KEY_NOTIFY)

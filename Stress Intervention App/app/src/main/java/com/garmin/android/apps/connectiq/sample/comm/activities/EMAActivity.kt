@@ -2,9 +2,11 @@ package com.garmin.android.apps.connectiq.sample.comm.activities
 
 import android.os.Bundle
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.garmin.android.apps.connectiq.sample.comm.R
+import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
 
 class EMAActivity: AppCompatActivity() {
     private lateinit var toolbar: Toolbar
@@ -16,6 +18,7 @@ class EMAActivity: AppCompatActivity() {
 
     private var emaResult = 2
 
+    private lateinit var DBhelper: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,17 +34,29 @@ class EMAActivity: AppCompatActivity() {
         r_btn4 = findViewById(R.id.rg_btn4)
         r_btn5 = findViewById(R.id.rg_btn5)
 
+        DBhelper = AppDatabase.getInstance(this)
+
         var currentTime = System.currentTimeMillis()
-        var minus10Time = currentTime - 10*60*1000
-        var plus10Time = currentTime + 10*60*1000
 
         if (r_btn1.isChecked() || r_btn2.isChecked() || r_btn3.isChecked()) {
-            emaResult = 0
             //Not stressed
+            emaResult = 0
+            val addRunnable = Runnable {
+                DBhelper.labelDAO().insertLabelData(System.currentTimeMillis(), emaResult)
+            }
+            val thread = Thread(addRunnable)
+            thread.start()
+            Toast.makeText(applicationContext, "Your answer is stored...", Toast.LENGTH_SHORT).show()
         }
         else {
+            //Stressed
             emaResult = 1
-            //stressed
+            val addRunnable = Runnable {
+                DBhelper.labelDAO().insertLabelData(System.currentTimeMillis(), emaResult)
+            }
+            val thread = Thread(addRunnable)
+            thread.start()
+            Toast.makeText(applicationContext, "Your answer is stored...", Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -47,7 +47,8 @@ class FeatureService : Service() {
     private var activityData: Map<String, Int> = mutableMapOf()
     private var lastStepData: Int = -1
     private var lastDistanceData: Int = -1
-    private lateinit var DBhelper: AppDatabase
+
+    //private lateinit var DBhelper: AppDatabase
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -76,7 +77,8 @@ class FeatureService : Service() {
             .setAutoCancel(false)
         startForeground(Constants.INTERVENTION_SERVICE_ID, builder.build())
 
-        DBhelper = AppDatabase.getInstance(this)
+        //DBhelper = AppDatabase.getInstance(this)
+        //현재 안쓴 상태... 오류날 경우 확인
 
     }
 

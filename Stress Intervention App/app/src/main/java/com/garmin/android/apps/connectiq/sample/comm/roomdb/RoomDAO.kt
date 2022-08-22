@@ -31,3 +31,9 @@ interface LocationDAO {
     @Query("SELECT LongitudeData FROM Locationdata WHERE currentTime > (:currentTime)")
     fun readLongitudeData(currentTime: Long): Array<Double>
 }
+
+@Dao
+interface LabelDAO {
+    @Query("INSERT INTO Labeldata VALUES (:currentTime, :label)")
+    fun insertLabelData(currentTime: Long, label: Int)
+}

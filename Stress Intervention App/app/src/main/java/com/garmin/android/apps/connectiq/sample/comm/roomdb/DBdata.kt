@@ -6,12 +6,6 @@ import androidx.room.PrimaryKey
 import java.sql.Timestamp
 
 @Entity
-data class HRVdata(
-    @PrimaryKey val current_time: String,
-    @ColumnInfo(name = "HRV_data") val HRVdata: Double
-)
-
-@Entity
 data class Locationdata(
     @PrimaryKey val currentTime: Long,
     @ColumnInfo(name = "LatitudeData") val LatitudeData: Double,
@@ -37,4 +31,10 @@ data class Userdata(
     @ColumnInfo(name = "home") val home: Boolean?,
     @ColumnInfo(name = "work") val work: Boolean?,
     @ColumnInfo(name = "screenTime") val screenTime: Double?
+)
+
+@Entity
+data class Labeldata(
+    @PrimaryKey val currentTime: Long,
+    @ColumnInfo(name = "label") var label: Int?
 )

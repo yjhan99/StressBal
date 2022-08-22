@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Userdata::class, Locationdata::class], version = 2)
+@Database(entities = [Userdata::class, Locationdata::class, Labeldata::class], version = 2)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun userDAO(): UserDAO
     abstract fun locationDAO(): LocationDAO
+    abstract fun labelDAO(): LabelDAO
 
     companion object {
         // For Singleton instantiation
