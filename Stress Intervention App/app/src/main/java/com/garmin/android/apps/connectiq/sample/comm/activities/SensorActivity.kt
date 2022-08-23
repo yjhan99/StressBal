@@ -133,5 +133,5 @@ class SensorActivity : AppCompatActivity() {
         val mode = appOps.checkOpNoThrow(OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
         return mode == MODE_ALLOWED
     }
-    
+
 }
