@@ -104,13 +104,13 @@ class SensorActivity : AppCompatActivity() {
             if (isMyServiceRunning(ScreenService::class.java)){
                 Log.e(TAG, "Screen Service is already running")
             } else {
-                Toast.makeText(applicationContext, "Start Screen Service...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Start Phone Usage Updates", Toast.LENGTH_SHORT).show()
                 startService(Intent(this, ScreenService::class.java))
             }
         } else if(datas.toString().equals("Stop Phone Usage Updates")){
             if (isMyServiceRunning(ScreenService::class.java)){
                 Log.d(TAG, "Screen Service 중지")
-                Toast.makeText(applicationContext, "Stop Screen Service", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Stop Phone Usage Updates", Toast.LENGTH_SHORT).show()
                 stopService(Intent(this, ScreenService::class.java))
             } else {
                 Log.e(TAG, "Screen Service is not running")
@@ -133,36 +133,5 @@ class SensorActivity : AppCompatActivity() {
         val mode = appOps.checkOpNoThrow(OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
         return mode == MODE_ALLOWED
     }
-
-//    private fun showAppUsageStats(usageStats: MutableList<UsageStats>) {
-//        usageStats.sortWith(Comparator { right, left ->
-//            compareValues(left.lastTimeUsed, right.lastTimeUsed)
-//        })
-//
-//        usageStats.forEach { it ->
-//            if(it.totalTimeInForeground != 0.toLong()){ //foreground에서 사용된 시간이 0인 앱은 저장하지 않음
-//                Log.d(TAG, "packageName: ${it.packageName}, lastTimeUsed: ${Date(it.lastTimeUsed)}, " +
-//                        "totalTimeInForeground: ${it.totalTimeInForeground}")
-//
-//                val addRunnable = Runnable {
-//                    AppDatabase.getInstance(this).roomDAO().insertPhoneUsageData(Timestamp(System.currentTimeMillis()).toString(), it.packageName.toString(), Date(it.lastTimeUsed).toString(), it.totalTimeInForeground)
-//                }
-//                val thread = Thread(addRunnable)
-//                thread.start()
-//            }
-//        }
-//    }
-//
-//    private fun getAppUsageStats(): MutableList<UsageStats> {
-//        val cal = Calendar.getInstance()
-//        cal.add(Calendar.MONTH, -1)
-//
-//        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-//        val queryUsageStats = usageStatsManager
-//            .queryUsageStats(
-//                UsageStatsManager.INTERVAL_DAILY, cal.timeInMillis,
-//                System.currentTimeMillis()
-//            )
-//        return queryUsageStats
-//    }
+    
 }
