@@ -27,6 +27,8 @@ import com.garmin.android.apps.connectiq.sample.comm.Service.EMAService
 import com.garmin.android.apps.connectiq.sample.comm.Service.FeatureService
 import com.garmin.android.apps.connectiq.sample.comm.UpdateWorker
 import com.garmin.android.apps.connectiq.sample.comm.adapter.IQDeviceAdapter
+import com.garmin.android.apps.connectiq.sample.comm.roomdb.AppDatabase
+import com.garmin.android.apps.connectiq.sample.comm.roomdb.Labeldata
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
 import com.garmin.android.connectiq.exception.InvalidStateException
@@ -98,8 +100,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(1, TimeUnit.DAYS)
-            .setInitialDelay(1, TimeUnit.DAYS)
+        val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(15, TimeUnit.MINUTES)
+            .setInitialDelay(15, TimeUnit.MINUTES)
             .build()
         val workManager = WorkManager.getInstance(application)
         workManager.enqueueUniquePeriodicWork("UpdateWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)

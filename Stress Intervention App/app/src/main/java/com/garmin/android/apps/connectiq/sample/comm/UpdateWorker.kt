@@ -23,6 +23,8 @@ class UpdateWorker(context: Context, params: WorkerParameters) :
                 val plus10time = data.currentTime + 10*60*1000
                 DBhelper.userDAO().updateEMAResult(data.label, minus10time, plus10time)
             }
+
+            Log.d(TAG,"success")
             Result.success() // return statement
 
         } catch (e: Exception) {

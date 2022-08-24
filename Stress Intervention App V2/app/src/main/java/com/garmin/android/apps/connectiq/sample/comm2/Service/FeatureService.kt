@@ -253,7 +253,6 @@ class FeatureService : Service() {
             }
             stepdata = currentstepData - lastStepData
             if(stepdata < 0) {
-                lastStepData = 0
                 return 0
             }
             else {
@@ -275,6 +274,9 @@ class FeatureService : Service() {
             }
             else {
                 distancechange = currentdistanceData - lastDistanceData
+                if(distancechange < 0) {
+                    return false
+                }
                 lastDistanceData = currentdistanceData
                 if(distancechange > 1000) {
                     return true

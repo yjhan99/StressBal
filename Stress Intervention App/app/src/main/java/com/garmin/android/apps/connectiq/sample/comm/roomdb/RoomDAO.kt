@@ -13,7 +13,7 @@ interface UserDAO {
     @Query("SELECT step FROM Userdata WHERE currentTime = (SELECT MAX(currentTime) FROM Userdata)")
     fun readLastStep(): Int
 
-    @Query("UPDATE Userdata SET label = (:emaResult) WHERE currentTime >= (:minus10Time) OR currentTime <= (:plus10Time)")
+    @Query("UPDATE Userdata SET label = (:emaResult) WHERE currentTime >= (:minus10Time) AND currentTime <= (:plus10Time)")
     fun updateEMAResult(emaResult:Int, minus10Time: Long, plus10Time: Long)
 }
 
