@@ -278,7 +278,7 @@ class FeatureService : Service() {
                     return false
                 }
                 lastDistanceData = currentdistanceData
-                if(distancechange > 1000) {
+                if(distancechange > 10) {
                     return true
                 }
                 return false

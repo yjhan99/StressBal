@@ -100,8 +100,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(15, TimeUnit.MINUTES)
-            .setInitialDelay(15, TimeUnit.MINUTES)
+        val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(1, TimeUnit.DAYS)
+            .setInitialDelay(15, TimeUnit.HOURS)
             .build()
         val workManager = WorkManager.getInstance(application)
         workManager.enqueueUniquePeriodicWork("UpdateWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)
