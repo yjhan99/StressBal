@@ -54,7 +54,6 @@ class EMAActivity: AppCompatActivity() {
                     r_btn3.setTextColor(Color.parseColor("#454545"))
                     r_btn4.setTextColor(Color.parseColor("#454545"))
                     r_btn5.setTextColor(Color.parseColor("#454545"))
-
                 }
                 R.id.rg_btn2 -> {
                     emaResult = 0
@@ -63,7 +62,6 @@ class EMAActivity: AppCompatActivity() {
                     r_btn3.setTextColor(Color.parseColor("#454545"))
                     r_btn4.setTextColor(Color.parseColor("#454545"))
                     r_btn5.setTextColor(Color.parseColor("#454545"))
-
                 }
                 R.id.rg_btn3 -> {
                     emaResult = 0
@@ -72,7 +70,6 @@ class EMAActivity: AppCompatActivity() {
                     r_btn2.setTextColor(Color.parseColor("#454545"))
                     r_btn4.setTextColor(Color.parseColor("#454545"))
                     r_btn5.setTextColor(Color.parseColor("#454545"))
-
                 }
                 R.id.rg_btn4 -> {
                     emaResult = 1
@@ -81,7 +78,6 @@ class EMAActivity: AppCompatActivity() {
                     r_btn2.setTextColor(Color.parseColor("#454545"))
                     r_btn3.setTextColor(Color.parseColor("#454545"))
                     r_btn5.setTextColor(Color.parseColor("#454545"))
-
                 }
                 R.id.rg_btn5 -> {
                     emaResult = 1
@@ -102,11 +98,11 @@ class EMAActivity: AppCompatActivity() {
             r_btn4.setTextColor(Color.parseColor("#454545"))
             r_btn5.setTextColor(Color.parseColor("#454545"))
 
-            //val addRunnable = Runnable {
-            //    DBhelper.labelDAO().insertLabelData(System.currentTimeMillis(), emaResult)
-            //}
-            //val thread = Thread(addRunnable)
-            //thread.start()
+            val addRunnable = Runnable {
+                DBhelper.labelDAO().insertLabelData(System.currentTimeMillis(), emaResult)
+            }
+            val thread = Thread(addRunnable)
+            thread.start()
             Toast.makeText(applicationContext, "Your answer is stored...", Toast.LENGTH_SHORT).show()
         }
     }

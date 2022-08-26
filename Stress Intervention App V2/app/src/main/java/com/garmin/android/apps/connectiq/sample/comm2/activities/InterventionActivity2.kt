@@ -1,6 +1,5 @@
 package com.garmin.android.apps.connectiq.sample.comm2.activities
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar

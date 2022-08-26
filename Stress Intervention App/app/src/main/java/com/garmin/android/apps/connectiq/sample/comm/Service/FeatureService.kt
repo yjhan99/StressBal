@@ -275,7 +275,7 @@ class FeatureService : Service() {
             }
             else {
                 distancechange = currentdistanceData - lastDistanceData
-                if(distancechange < 0) {
+                if (distancechange < 0) {
                     return false
                 }
                 lastDistanceData = currentdistanceData
