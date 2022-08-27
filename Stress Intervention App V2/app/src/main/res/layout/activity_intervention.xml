@@ -38,6 +38,19 @@
         app:layout_constraintTop_toBottomOf="@id/intervention_toolbar" />
 
     <TextView
+        android:id="@+id/number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8"
+        android:textAlignment="center"
+        android:textColor="#3cff00"
+        android:textSize="36dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView1"
+        app:layout_constraintEnd_toEndOf="@+id/intervention_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView1" />
+
+    <TextView
         android:id="@+id/intervention_text_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -15,6 +15,9 @@ interface UserDAO {
 
     @Query("UPDATE Userdata SET label = (:emaResult) WHERE currentTime >= (:minus10Time) AND currentTime <= (:plus10Time)")
     fun updateEMAResult(emaResult:Int, minus10Time: Long, plus10Time: Long)
+
+    @Query("SELECT * FROM Userdata WHERE currentTime >= (:lastTime)")
+    fun readData(lastTime: Long)
 }
 
 @Dao

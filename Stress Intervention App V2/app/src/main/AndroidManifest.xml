@@ -32,7 +32,7 @@
             android:name="com.garmin.android.apps.connectiq.sample.comm2.Service.FeatureService"
             android:enabled="true"
             android:exported="true" />
-        <service android:name="com.garmin.android.apps.connectiq.sample.comm2.Service.EMAService"
+        <service android:name="com.garmin.android.apps.connectiq.sample.comm2.Service.TimerService"
             android:enabled="true"
             android:exported="true" />
         <service android:name="com.garmin.android.apps.connectiq.sample.comm2.Service.ScreenService"

@@ -21,7 +21,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.garmin.android.apps.connectiq.sample.comm2.R
-import com.garmin.android.apps.connectiq.sample.comm2.Service.EMAService
+import com.garmin.android.apps.connectiq.sample.comm2.Service.TimerService
 import com.garmin.android.apps.connectiq.sample.comm2.Service.FeatureService
 import com.garmin.android.apps.connectiq.sample.comm2.UpdateWorker
 import com.garmin.android.apps.connectiq.sample.comm2.adapter.IQDeviceAdapter
@@ -29,7 +29,6 @@ import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
 import com.garmin.android.connectiq.exception.InvalidStateException
 import com.garmin.android.connectiq.exception.ServiceUnavailableException
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -79,12 +78,12 @@ class MainActivity : AppCompatActivity() {
         btnControl = findViewById(R.id.btn_control)
 
         btnControl.setOnClickListener{
-            if(isMyServiceRunning(FeatureService::class.java) && isMyServiceRunning(EMAService::class.java)){
+            if(isMyServiceRunning(FeatureService::class.java) && isMyServiceRunning(TimerService::class.java)){
                 //현재 intervention이 실행중인 경우, 실행중인 intervention을 종료
                 Toast.makeText(applicationContext, "Quit intervention", Toast.LENGTH_SHORT).show()
 
                 val stopFeatureIntent = Intent(this, FeatureService::class.java)
-                val stopEMAIntent = Intent(this, EMAService::class.java)
+                val stopEMAIntent = Intent(this, TimerService::class.java)
                 stopService(stopFeatureIntent)
                 stopService(stopEMAIntent)
                 Log.d(TAG, "Quit intervention process")
@@ -137,10 +136,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onItemClick(device: IQDevice) {
-        if(!isMyServiceRunning(FeatureService::class.java) && !isMyServiceRunning(EMAService::class.java)){
+        if(!isMyServiceRunning(FeatureService::class.java) && !isMyServiceRunning(TimerService::class.java)){
             Toast.makeText(applicationContext, "Starting Intervention...", Toast.LENGTH_SHORT).show()
             startService(FeatureService.putIntent(this, device))
-            startService(EMAService.putIntent(this))
+            startService(TimerService.putIntent(this))
         } else {
             Toast.makeText(applicationContext, "Intervention cannot start", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "cannot start the intervention")
