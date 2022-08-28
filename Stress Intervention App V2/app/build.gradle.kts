@@ -60,5 +60,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:18.0.0")
 
     //To use TensorFlow Lite
-    implementation("org.tensorflow:tensorflow-lite:2.4.0")
+    implementation("org.tensorflow:tensorflow-lite:2.8.0")
 }

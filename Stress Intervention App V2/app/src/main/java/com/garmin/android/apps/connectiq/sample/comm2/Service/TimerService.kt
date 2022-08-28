@@ -12,6 +12,9 @@ import androidx.core.app.NotificationCompat
 import com.garmin.android.apps.connectiq.sample.comm2.R
 import com.garmin.android.apps.connectiq.sample.comm2.activities.EMAActivity
 import com.garmin.android.apps.connectiq.sample.comm2.activities.InterventionActivity
+import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier
+import com.garmin.android.apps.connectiq.sample.comm2.roomdb.AppDatabase
+import java.io.IOException
 import java.util.*
 
 class TimerService: Service() {
@@ -33,8 +36,23 @@ class TimerService: Service() {
     private var timer = Timer()
     private var timerTask = object : TimerTask() {
         override fun run() {
+            /*
+            val tenbftimestamp = System.currentTimeMillis() - 10*60*1000
+            val inputData = AppDatabase.getInstance(this@TimerService).userDAO().readData(tenbftimestamp)
+            //TODO null 처리
+            val result = arrayOf<Int>()
+
+            inputData.forEach {
+                result.plus(classifier.classify(it))
+                Log.d(TAG, "Result: ${it}")
+            }
+            */
+
             if (iteration < 5) {
-                interventionNotification()
+                //if(result.contains(1)) {
+                //    interventionNotification()
+                //    Log.d(TAG, "Intervention Sent")
+                //}
             }
             else {
                 emaNotification()
@@ -43,6 +61,8 @@ class TimerService: Service() {
             iteration += 1
         }
     }
+
+    private lateinit var classifier: Classifier
 
     override fun onCreate() {
         super.onCreate()
@@ -63,6 +83,8 @@ class TimerService: Service() {
             .setGroup(GROUP_KEY_NOTIFY)
             .setAutoCancel(false)
         startForeground(Constants.EMA_SERVICE_ID, builder.build())
+
+        // initClassifier()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -71,8 +93,9 @@ class TimerService: Service() {
             return START_NOT_STICKY
         } else {
             Log.d(TAG, "EMA service started...")
-            //timer.scheduleAtFixedRate(timerTask, 7200000, 7200000)
-            timer.scheduleAtFixedRate(timerTask, 1200000, 1200000)
+            //timer.scheduleAtFixedRate(timerTask, 1200000, 1200000)
+            timer.scheduleAtFixedRate(timerTask, 600000, 600000)
+
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -140,12 +163,24 @@ class TimerService: Service() {
         }
     }
 
+    /*
+    private fun initClassifier() {
+        classifier = Classifier(assets, Classifier.STRESS_CLASSIFIER)
+        try {
+            classifier.init()
+        } catch (exception: IOException) {
+            Log.d(TAG, "IOException")
+        }
+    }
+    */
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        //if (::classifier.isInitialized) classifier.finish()
         timer.cancel()
     }
 }

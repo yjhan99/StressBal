@@ -2,6 +2,7 @@ package com.garmin.android.apps.connectiq.sample.comm2.roomdb
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.garmin.android.apps.connectiq.sample.comm2.model.InputData
 
 @Dao
 interface UserDAO {
@@ -16,8 +17,9 @@ interface UserDAO {
     @Query("UPDATE Userdata SET label = (:emaResult) WHERE currentTime >= (:minus10Time) AND currentTime <= (:plus10Time)")
     fun updateEMAResult(emaResult:Int, minus10Time: Long, plus10Time: Long)
 
-    @Query("SELECT * FROM Userdata WHERE currentTime >= (:lastTime)")
-    fun readData(lastTime: Long)
+    @Query("SELECT HRV, meanX, stdX, magX, meanY, stdY, magY, meanZ, stdZ, magZ, " +
+            "step, distance, home, work, screenTime FROM Userdata WHERE currentTime >= (:lastTime)")
+    fun readData(lastTime: Long): Array<InputData>
 }
 
 @Dao
