@@ -395,4 +395,6 @@ class FeatureService : Service() {
                 "step: ${stepdata} distance: ${distancedata} home: ${homedata} work: ${workdata} screen: ${screentime}")
     }
 
+
+
 }

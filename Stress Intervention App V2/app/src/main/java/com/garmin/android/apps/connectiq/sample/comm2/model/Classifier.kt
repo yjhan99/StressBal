@@ -2,6 +2,7 @@ package com.garmin.android.apps.connectiq.sample.comm2.model
 
 import android.content.res.AssetManager
 import android.util.Log
+import com.garmin.android.apps.connectiq.sample.comm2.roomdb.Userdata
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
 import java.nio.ByteBuffer
@@ -23,6 +24,7 @@ class Classifier(private val assetManager: AssetManager, private val modelName: 
         val model = loadModelFile()
         model.order(ByteOrder.nativeOrder())
         interpreter = Interpreter(model)
+        initModelShape()
     }
 
     private fun loadModelFile(): ByteBuffer {
@@ -46,13 +48,17 @@ class Classifier(private val assetManager: AssetManager, private val modelName: 
         modelOutputClasses = outputShape[1]
     }
 
-    fun classify(data: InputData): Int {
+    fun classify(data: FloatArray): Pair<Int, Float> {
+        // val input = Array(1) { FloatArray(15) { 0f } }
+        Log.d(TAG, "${modelOutputClasses}")
         val result = Array(1) { FloatArray(modelOutputClasses) { 0f } }
+        // interpreter.run(input, result)
         interpreter.run(data, result)
+        Log.d(TAG, "${result[0]}")
         return argmax(result[0])
     }
 
-    private fun argmax(array: FloatArray): Int {
+    private fun argmax(array: FloatArray): Pair<Int, Float> {
         var maxIndex = 0
         var maxValue = 0f
         array.forEachIndexed { index, value ->
@@ -62,7 +68,7 @@ class Classifier(private val assetManager: AssetManager, private val modelName: 
             }
         }
         Log.d(TAG, "Result: ${maxIndex} Prob: ${maxValue}")
-        return maxIndex
+        return maxIndex to maxValue
     }
 
     fun finish() {

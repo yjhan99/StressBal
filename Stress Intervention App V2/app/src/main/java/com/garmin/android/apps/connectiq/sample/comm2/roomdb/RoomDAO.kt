@@ -20,6 +20,9 @@ interface UserDAO {
     @Query("SELECT HRV, meanX, stdX, magX, meanY, stdY, magY, meanZ, stdZ, magZ, " +
             "step, distance, home, work, screenTime FROM Userdata WHERE currentTime >= (:lastTime)")
     fun readData(lastTime: Long): Array<InputData>
+
+    @Query("SELECT * FROM Userdata WHERE currentTime = (SELECT MAX(currentTime) FROM Userdata)")
+    fun readRecentData(): Userdata
 }
 
 @Dao
