@@ -33,26 +33,48 @@ class TimerService: Service() {
 
     private var iteration = 0
 
+    private lateinit var classifier: Classifier
+    private var modelResult = 0
+
     private var timer = Timer()
     private var timerTask = object : TimerTask() {
         override fun run() {
-            /*
-            val tenbftimestamp = System.currentTimeMillis() - 10*60*1000
-            val inputData = AppDatabase.getInstance(this@TimerService).userDAO().readData(tenbftimestamp)
-            //TODO null 처리
-            val result = arrayOf<Int>()
-
-            inputData.forEach {
-                result.plus(classifier.classify(it))
-                Log.d(TAG, "Result: ${it}")
+            // TODO: 가장 최근의 데이터만 사용함 (10분전으로 바꿔야)
+            val recentData = AppDatabase.getInstance(this@TimerService).userDAO().readRecentData()
+            var inputData = FloatArray(15)
+            if(recentData == null) {
+                Log.d(TAG,"There is no recent data")
             }
-            */
+            else {
+                Log.d(TAG, "input data start")
+                inputData.plus(recentData.HRV!!.toFloat())
+                inputData.plus(recentData.meanX!!.toFloat())
+                inputData.plus(recentData.stdX!!.toFloat())
+                inputData.plus(recentData.magX!!.toFloat())
+                inputData.plus(recentData.meanY!!.toFloat())
+                inputData.plus(recentData.stdY!!.toFloat())
+                inputData.plus(recentData.magY!!.toFloat())
+                inputData.plus(recentData.meanZ!!.toFloat())
+                inputData.plus(recentData.stdZ!!.toFloat())
+                inputData.plus(recentData.magZ!!.toFloat())
+                inputData.plus(recentData.step!!.toFloat())
+                var distance = if (recentData.distance == true) 1F else 0F
+                inputData.plus(distance)
+                var home = if (recentData.home == true) 1F else 0F
+                inputData.plus(home)
+                var work = if (recentData.work == true) 1F else 0F
+                inputData.plus(work)
+                inputData.plus(recentData.currentTime!!.toFloat())
+
+                modelResult = classifier.classify(inputData).first
+                Log.d(TAG, "${modelResult}")
+            }
 
             if (iteration < 5) {
-                //if(result.contains(1)) {
-                //    interventionNotification()
-                //    Log.d(TAG, "Intervention Sent")
-                //}
+                if (modelResult == 0) {
+                    interventionNotification()
+                    Log.d(TAG, "Intervention Sent")
+                }
             }
             else {
                 emaNotification()
@@ -61,8 +83,6 @@ class TimerService: Service() {
             iteration += 1
         }
     }
-
-    private lateinit var classifier: Classifier
 
     override fun onCreate() {
         super.onCreate()
@@ -84,7 +104,7 @@ class TimerService: Service() {
             .setAutoCancel(false)
         startForeground(Constants.EMA_SERVICE_ID, builder.build())
 
-        // initClassifier()
+        initClassifier()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -163,7 +183,6 @@ class TimerService: Service() {
         }
     }
 
-    /*
     private fun initClassifier() {
         classifier = Classifier(assets, Classifier.STRESS_CLASSIFIER)
         try {
@@ -172,7 +191,6 @@ class TimerService: Service() {
             Log.d(TAG, "IOException")
         }
     }
-    */
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -180,7 +198,7 @@ class TimerService: Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        //if (::classifier.isInitialized) classifier.finish()
+        if (::classifier.isInitialized) classifier.finish()
         timer.cancel()
     }
 }
