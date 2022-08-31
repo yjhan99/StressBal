@@ -384,15 +384,17 @@ class FeatureService : Service() {
             screentime = screentime/1000
         }
 
-        val addRunnable = Runnable {
-            AppDatabase.getInstance(this).userDAO().insertData(System.currentTimeMillis(), 2, hrvdata,
-                meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, homedata, workdata, screentime)
+        if (hrvdata != 0.0) {
+            val addRunnable = Runnable {
+                AppDatabase.getInstance(this).userDAO().insertData(System.currentTimeMillis(), 2, hrvdata,
+                    meanXdata, stdXdata, magXdata, meanYdata, stdYdata, magYdata, meanZdata, stdZdata, magZdata, stepdata, distancedata, homedata, workdata, screentime)
+            }
+            val thread = Thread(addRunnable)
+            thread.start()
+            Log.d(TAG, "Time: ${System.currentTimeMillis().toString()} HRV: ${hrvdata} meanX: ${meanXdata} stdX: ${stdXdata} magX: ${magXdata} " +
+                    "meanY: ${meanYdata} stdY: ${stdYdata} magZ: ${magZdata} meanZ: ${meanZdata} stdZ: ${stdZdata} magX: ${magZdata} " +
+                    "step: ${stepdata} distance: ${distancedata} home: ${homedata} work: ${workdata} screen: ${screentime}")
         }
-        val thread = Thread(addRunnable)
-        thread.start()
-        Log.d(TAG, "Time: ${System.currentTimeMillis().toString()} HRV: ${hrvdata} meanX: ${meanXdata} stdX: ${stdXdata} magX: ${magXdata} " +
-                "meanY: ${meanYdata} stdY: ${stdYdata} magZ: ${magZdata} meanZ: ${meanZdata} stdZ: ${stdZdata} magX: ${magZdata} " +
-                "step: ${stepdata} distance: ${distancedata} home: ${homedata} work: ${workdata} screen: ${screentime}")
     }
 
 

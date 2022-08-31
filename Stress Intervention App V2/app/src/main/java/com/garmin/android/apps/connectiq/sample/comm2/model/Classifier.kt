@@ -2,7 +2,6 @@ package com.garmin.android.apps.connectiq.sample.comm2.model
 
 import android.content.res.AssetManager
 import android.util.Log
-import com.garmin.android.apps.connectiq.sample.comm2.roomdb.Userdata
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
 import java.nio.ByteBuffer

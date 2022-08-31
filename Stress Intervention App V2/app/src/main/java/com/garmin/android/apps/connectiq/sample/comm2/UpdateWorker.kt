@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier
 import com.garmin.android.apps.connectiq.sample.comm2.roomdb.AppDatabase
 
 class UpdateWorker(context: Context, params: WorkerParameters) :
@@ -11,6 +12,8 @@ class UpdateWorker(context: Context, params: WorkerParameters) :
 
     private val TAG= "UpdateWorker"
     private var DBhelper = AppDatabase.getInstance(context = context)
+
+    private lateinit var classifier: Classifier
 
     override fun doWork(): Result {
         return try {
@@ -30,4 +33,6 @@ class UpdateWorker(context: Context, params: WorkerParameters) :
             Result.failure() // return statement
         }
     }
+
+
 }
