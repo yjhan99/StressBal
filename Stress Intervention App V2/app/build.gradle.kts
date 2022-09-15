@@ -30,6 +30,7 @@ android {
 }
 
 dependencies {
+    implementation(project(mapOf("path" to ":transfer_api")))
     val workVersion = "2.7.1"
     implementation("androidx.work:work-runtime-ktx:$workVersion")
 
@@ -65,4 +66,6 @@ dependencies {
     implementation ("org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT")
     // This dependency adds the necessary TF op support.
     implementation ("org.tensorflow:tensorflow-lite-select-tf-ops:0.0.0-nightly-SNAPSHOT")
+
+    //implementation (project(path = ":transfer_api"))
 }
