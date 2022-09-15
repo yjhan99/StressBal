@@ -39,7 +39,7 @@ dependencies {
 
     // 파일 경로를 libs\monkeybrains-sdk-release.aar이 있는 경로로 바꿔주어야 함
     // aar 파일 추가 방법: https://developer.android.com/studio/projects/android-library?hl=ko
-    implementation(files("\\libs\\monkeybrains-sdk-release.aar"))
+    implementation(files("libs/monkeybrains-sdk-release.aar"))
 
     implementation("androidx.appcompat:appcompat:1.3.0")
     implementation("com.google.android.material:material:1.4.0")
@@ -60,7 +60,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:18.0.0")
 
     //To use TensorFlow Lite
-    implementation("org.tensorflow:tensorflow-lite:2.8.0")
+    //implementation("org.tensorflow:tensorflow-lite:2.8.0")
     implementation("org.tensorflow:tensorflow-lite-select-tf-ops")
     implementation ("org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT")
     // This dependency adds the necessary TF op support.
