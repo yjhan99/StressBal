@@ -13,21 +13,21 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.garmin.android.apps.connectiq.sample.comm2.R
-import com.garmin.android.apps.connectiq.sample.comm2.Service.TimerService
 import com.garmin.android.apps.connectiq.sample.comm2.Service.FeatureService
+import com.garmin.android.apps.connectiq.sample.comm2.Service.TimerService
 import com.garmin.android.apps.connectiq.sample.comm2.UpdateWorker
 import com.garmin.android.apps.connectiq.sample.comm2.adapter.IQDeviceAdapter
 import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier
 import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier2
-import com.garmin.android.apps.connectiq.sample.comm2.model.Updater
+import com.garmin.android.apps.connectiq.sample.comm2.model.TransferLearningModelWrapper
 import com.garmin.android.apps.connectiq.sample.comm2.roomdb.AppDatabase
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
@@ -35,6 +35,7 @@ import com.garmin.android.connectiq.exception.InvalidStateException
 import com.garmin.android.connectiq.exception.ServiceUnavailableException
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,7 +51,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
 
     private lateinit var btn: Button
-    private lateinit var updater: Updater
     private lateinit var classifier2: Classifier2
 
     private val connectIQListener: ConnectIQ.ConnectIQListener =
@@ -82,9 +82,6 @@ class MainActivity : AppCompatActivity() {
 
         setupUi()
         setupConnectIQSdk()
-
-        initUpdater()
-        initClassifier2()
 
         btnControl = findViewById(R.id.btn_control)
 
@@ -140,10 +137,7 @@ class MainActivity : AppCompatActivity() {
 
                 val inputDataArray = arrayOf(inputData, inputData)
 
-                updater.retrain(inputData = inputDataArray)
 
-                var result = classifier2.run(inputData)
-                Log.d(TAG, "${result}")
             }
         }
 
@@ -164,7 +158,7 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onDestroy() {
         super.onDestroy()
-        if (::updater.isInitialized) updater.finish()
+        //if (::updater.isInitialized) updater.finish()
         if (::classifier2.isInitialized) classifier2.finish()
     }
 
@@ -295,21 +289,4 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    private fun initUpdater() {
-        updater = Updater(assets, Classifier.STRESS_CLASSIFIER)
-        try {
-            updater.init()
-        } catch (exception: IOException) {
-            Log.d(TAG, "IOException")
-        }
-    }
-
-    private fun initClassifier2() {
-        classifier2 = Classifier2(assets, Classifier.STRESS_CLASSIFIER)
-        try {
-            classifier2.init()
-        } catch (exception: IOException) {
-            Log.d(TAG, "IOException")
-        }
-    }
 }
