@@ -159,6 +159,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onItemClick(device: IQDevice) {
+
         if(!isMyServiceRunning(FeatureService::class.java) && !isMyServiceRunning(TimerService::class.java)){
             Toast.makeText(applicationContext, "Starting Intervention...", Toast.LENGTH_SHORT).show()
             startService(FeatureService.putIntent(this, device))

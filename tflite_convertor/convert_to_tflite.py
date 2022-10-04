@@ -5,6 +5,8 @@ from tfltransfer import bases
 from tfltransfer import heads
 from tfltransfer import optimizers
 from tfltransfer.tflite_transfer_converter import TFLiteTransferConverter
+import numpy as np
+import pandas as pd
 
 """Define the base model.
 
@@ -32,6 +34,20 @@ head = tf.keras.Sequential(
 )
 head.compile(loss="categorical_crossentropy", optimizer="adam")
 
+train_data = pd.read_csv('traindata.csv')
+
+X_data = train_data.loc[:, train_data.columns != 'label']
+y_data = pd.DataFrame(train_data.loc[:, 'label'])
+X_data = X_data.astype(np.float32)
+y_data = y_data.astype(np.float32)
+y_data = tf.keras.utils.to_categorical(y_data)
+
+head.fit(
+    x=X_data,
+    y=y_data,
+    batch_size=32,
+    epochs=400
+)
 
 """Convert the model for TFLite.
 
