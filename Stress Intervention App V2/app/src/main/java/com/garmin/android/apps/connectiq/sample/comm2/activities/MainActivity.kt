@@ -7,6 +7,7 @@ package com.garmin.android.apps.connectiq.sample.comm2.activities
 import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -25,15 +26,12 @@ import com.garmin.android.apps.connectiq.sample.comm2.Service.FeatureService
 import com.garmin.android.apps.connectiq.sample.comm2.Service.TimerService
 import com.garmin.android.apps.connectiq.sample.comm2.UpdateWorker
 import com.garmin.android.apps.connectiq.sample.comm2.adapter.IQDeviceAdapter
-import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier
 import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier2
-import com.garmin.android.apps.connectiq.sample.comm2.model.TransferLearningModelWrapper
-import com.garmin.android.apps.connectiq.sample.comm2.roomdb.AppDatabase
+import com.garmin.android.apps.connectiq.sample.comm2.model.Client
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
 import com.garmin.android.connectiq.exception.InvalidStateException
 import com.garmin.android.connectiq.exception.ServiceUnavailableException
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
@@ -51,7 +49,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
 
     private lateinit var btn: Button
-    private lateinit var classifier2: Classifier2
+
+    private lateinit var client: Client
 
     private val connectIQListener: ConnectIQ.ConnectIQListener =
         object : ConnectIQ.ConnectIQListener {
@@ -75,6 +74,8 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        client = Client(applicationContext)
 
         toolbar = findViewById(R.id.main_toolbar)
         setSupportActionBar(toolbar)
@@ -106,39 +107,15 @@ class MainActivity : AppCompatActivity() {
         btn = findViewById(R.id.button)
 
         btn.setOnClickListener {
-            //val tenbftimestamp = System.currentTimeMillis() - 10*60*1000
-            val recentData = AppDatabase.getInstance(this).userDAO().readRecentData()
-            var inputData = FloatArray(15)
-            if(recentData == null) {
-                Log.d(TAG,"There is no recent data")
-            }
-            else {
-                Log.d(TAG, "input data start")
-                inputData.plus(recentData.HRV!!.toFloat())
-                inputData.plus(recentData.meanX!!.toFloat())
-                inputData.plus(recentData.stdX!!.toFloat())
-                inputData.plus(recentData.magX!!.toFloat())
-                inputData.plus(recentData.meanY!!.toFloat())
-                inputData.plus(recentData.stdY!!.toFloat())
-                inputData.plus(recentData.magY!!.toFloat())
-                inputData.plus(recentData.meanZ!!.toFloat())
-                inputData.plus(recentData.stdZ!!.toFloat())
-                inputData.plus(recentData.magZ!!.toFloat())
-                inputData.plus(recentData.step!!.toFloat())
-                var distance = if (recentData.distance == true) 1F else 0F
-                inputData.plus(distance)
-                var home = if (recentData.home == true) 1F else 0F
-                inputData.plus(home)
-                var work = if (recentData.work == true) 1F else 0F
-                inputData.plus(work)
-                inputData.plus(recentData.currentTime!!.toFloat())
-
-                Log.d(TAG, "${inputData.size}")
-
-                val inputDataArray = arrayOf(inputData, inputData)
-
-
-            }
+            Log.d(TAG,"action start")
+            /*
+            val handler = Handler()
+            handler.postDelayed(Runnable {
+                client.loadData()
+            }, 1000)
+            */
+            client.loadData()
+            client.fit(5)
         }
 
         val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(1, TimeUnit.DAYS)
@@ -158,8 +135,6 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onDestroy() {
         super.onDestroy()
-        //if (::updater.isInitialized) updater.finish()
-        if (::classifier2.isInitialized) classifier2.finish()
     }
 
     private fun releaseConnectIQSdk() {
