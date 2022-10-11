@@ -62,9 +62,9 @@ class Client (input_context: Context?) {
         }
     }
 
-    fun loadData() {
+    fun loadData(personalData: FloatArray, sampleClass: String) {
         try {
-            var reader =
+            /*var reader =
                 BufferedReader(InputStreamReader(context!!.resources.assets.open("data/partition_train.txt")))
             //var reader =
             //    BufferedReader(InputStreamReader(context!!.assets.open("data/partition_train.txt")))
@@ -90,14 +90,39 @@ class Client (input_context: Context?) {
                 addSample("$line", false)
             }
             reader.close()
-
+            */
+            //addSample(personalData, sampleClass, true)
+            try {
+                //tlModel!!.addSample(personalData, sampleClass, true).get()
+                tlModel!!.addSample(personalData, sampleClass, true)
+                Log.d(TAG, tlModel.toString())
+                Log.d(TAG, sampleClass.toString())
+            } catch (e: ExecutionException) {
+                throw RuntimeException("Failed to add sample to model")
+            } catch (e: InterruptedException) {
+                // no-op
+            }
         } catch (ex: IOException) {
             ex.printStackTrace()
         }
     }
 
     @Throws(IOException::class)
-    private fun addSample(Path: String, isTraining: Boolean) {
+    private fun addSample(personalData:FloatArray, sampleClass: String, isTraining: Boolean) {
+        Log.d(TAG, tlModel.toString())
+        Log.d(TAG, sampleClass.toString())
+        Log.d(TAG, isTraining.toString())
+        try {
+            tlModel!!.addSample(personalData, sampleClass, isTraining).get()
+        } catch (e: ExecutionException) {
+            throw RuntimeException("Failed to add sample to model")
+        } catch (e: InterruptedException) {
+            // no-op
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun addSampleOld(Path: String, isTraining: Boolean) {
         val options: BitmapFactory.Options = BitmapFactory.Options()
         options.inPreferredConfig = Bitmap.Config.ARGB_8888
         val bitmap: Bitmap? =
@@ -169,5 +194,4 @@ class Client (input_context: Context?) {
         return normalizedRgb
     }
     */
-
 }

@@ -17,9 +17,8 @@ interface UserDAO {
     @Query("UPDATE Userdata SET label = (:emaResult) WHERE currentTime >= (:minus10Time) AND currentTime <= (:plus10Time)")
     fun updateEMAResult(emaResult:Int, minus10Time: Long, plus10Time: Long)
 
-    @Query("SELECT HRV, meanX, stdX, magX, meanY, stdY, magY, meanZ, stdZ, magZ, " +
-            "step, distance, home, work, screenTime FROM Userdata WHERE currentTime >= (:lastTime)")
-    fun readData(lastTime: Long): Array<InputData>
+    @Query("SELECT * FROM Userdata WHERE currentTime >= (:lastTime)")
+    fun readData(lastTime: Long): Array<Userdata>
 
     @Query("SELECT * FROM Userdata WHERE currentTime = (SELECT MAX(currentTime) FROM Userdata)")
     fun readRecentData(): Userdata

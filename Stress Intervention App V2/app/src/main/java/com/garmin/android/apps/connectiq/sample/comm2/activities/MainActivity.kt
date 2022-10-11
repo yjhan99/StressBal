@@ -28,6 +28,9 @@ import com.garmin.android.apps.connectiq.sample.comm2.UpdateWorker
 import com.garmin.android.apps.connectiq.sample.comm2.adapter.IQDeviceAdapter
 import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier2
 import com.garmin.android.apps.connectiq.sample.comm2.model.Client
+import com.garmin.android.apps.connectiq.sample.comm2.roomdb.AppDatabase
+import com.garmin.android.apps.connectiq.sample.comm2.roomdb.Labeldata
+import com.garmin.android.apps.connectiq.sample.comm2.roomdb.Userdata
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.IQDevice
 import com.garmin.android.connectiq.exception.InvalidStateException
@@ -114,12 +117,48 @@ class MainActivity : AppCompatActivity() {
                 client.loadData()
             }, 1000)
             */
-            client.loadData()
+            //client.loadData()
+            //client.fit(5)
+
+            val daybftimestamp = System.currentTimeMillis() - 7*24*60*60*1000 //1일전 timestamp
+            var labeldata = AppDatabase.getInstance(this).labelDAO().readLabelData(daybftimestamp)
+            var personalData = FloatArray(15)
+
+            labeldata.forEach { data ->
+                val minus10time = data.currentTime - 10*60*1000
+                val plus10time = data.currentTime + 10*60*1000
+                AppDatabase.getInstance(this).userDAO().updateEMAResult(data.label, minus10time, plus10time)
+            }
+            var userdata = AppDatabase.getInstance(this).userDAO().readData(daybftimestamp)
+            userdata.forEach { data ->
+                if(data.label != 2) {
+                    personalData.plus(data.HRV!!.toFloat())
+                    personalData.plus(data.meanX!!.toFloat())
+                    personalData.plus(data.stdX!!.toFloat())
+                    personalData.plus(data.magX!!.toFloat())
+                    personalData.plus(data.meanY!!.toFloat())
+                    personalData.plus(data.stdY!!.toFloat())
+                    personalData.plus(data.magY!!.toFloat())
+                    personalData.plus(data.meanZ!!.toFloat())
+                    personalData.plus(data.stdZ!!.toFloat())
+                    personalData.plus(data.magZ!!.toFloat())
+                    personalData.plus(data.step!!.toFloat())
+                    var distance = if (data.distance == true) 1F else 0F
+                    personalData.plus(distance)
+                    var home = if (data.home == true) 1F else 0F
+                    personalData.plus(home)
+                    var work = if (data.work == true) 1F else 0F
+                    personalData.plus(work)
+                    Log.d(TAG, "${personalData.size}")
+                    personalData.plus(data.screenTime!!.toFloat())
+                    client.loadData(personalData, data.label.toString())
+                }
+            }
             client.fit(5)
         }
 
-        val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(1, TimeUnit.DAYS)
-            .setInitialDelay(15, TimeUnit.HOURS)
+        val workRequest = PeriodicWorkRequestBuilder<UpdateWorker>(15, TimeUnit.MINUTES)
+            //.setInitialDelay(30, TimeUnit.SECONDS)
             .build()
         val workManager = WorkManager.getInstance(application)
         workManager.enqueueUniquePeriodicWork("UpdateWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)
