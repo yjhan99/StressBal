@@ -121,6 +121,7 @@ class MainActivity : AppCompatActivity() {
             //client.fit(5)
 
             val daybftimestamp = System.currentTimeMillis() - 7*24*60*60*1000 //1일전 timestamp
+            //TODO: 1일전으로 바꿔주기
             var labeldata = AppDatabase.getInstance(this).labelDAO().readLabelData(daybftimestamp)
             var personalData = FloatArray(15)
 
@@ -129,6 +130,16 @@ class MainActivity : AppCompatActivity() {
                 val plus10time = data.currentTime + 10*60*1000
                 AppDatabase.getInstance(this).userDAO().updateEMAResult(data.label, minus10time, plus10time)
             }
+//            var userdata2 = AppDatabase.getInstance(this).userDAO().readData(daybftimestamp)
+//            var i = 0
+//            userdata2.forEach { data ->
+//                if(data.label != 2) {
+//                    AppDatabase.getInstance(this).userDAO().insertData(System.currentTimeMillis()+i, 2, data.HRV!!.toDouble(),
+//                        data.meanX!!.toDouble(), data.stdX!!.toDouble(), data.magX!!.toDouble(), data.meanY!!.toDouble(), data.stdY!!.toDouble(), data.magY!!.toDouble(), data.meanZ!!.toDouble(),
+//                        data.stdZ!!.toDouble(), data.magZ!!.toDouble(), data.step!!.toInt(), data.distance!!, data.home!!, data.work!!, data.screenTime!!)
+//                }
+//                i += 1
+//            }
             var userdata = AppDatabase.getInstance(this).userDAO().readData(daybftimestamp)
             userdata.forEach { data ->
                 if(data.label != 2) {

@@ -13,6 +13,7 @@ import com.garmin.android.apps.connectiq.sample.comm2.R
 import com.garmin.android.apps.connectiq.sample.comm2.activities.EMAActivity
 import com.garmin.android.apps.connectiq.sample.comm2.activities.InterventionActivity
 import com.garmin.android.apps.connectiq.sample.comm2.model.Classifier
+import com.garmin.android.apps.connectiq.sample.comm2.model.Client
 import com.garmin.android.apps.connectiq.sample.comm2.roomdb.AppDatabase
 import java.io.IOException
 import java.util.*
@@ -33,12 +34,55 @@ class TimerService: Service() {
 
     private var iteration = 0
 
+    private lateinit var client: Client
+
     private var timer = Timer()
     private var timerTask = object : TimerTask() {
         override fun run() {
+            val tenbftimestamp = System.currentTimeMillis() - 60*60*1000
+            Log.d(TAG, "TenbfTimestamp: ${tenbftimestamp}")
+            val recentDataList = AppDatabase.getInstance(this@TimerService).userDAO().readData(tenbftimestamp)
+            val resultList = IntArray(recentDataList.size)
+            Log.d(TAG, "InputData 개수: ${recentDataList.size}")
+            val inputData = FloatArray(15)
+            if (recentDataList == null) {
+                Log.d(TAG, "there is no recent data")
+                //TODO null 처리
+            }
+            else {
+                Log.d(TAG, "input data start")
+                for(recentData in recentDataList) {
+                    inputData.plus(recentData.HRV!!.toFloat())
+                    inputData.plus(recentData.meanX!!.toFloat())
+                    inputData.plus(recentData.stdX!!.toFloat())
+                    inputData.plus(recentData.magX!!.toFloat())
+                    inputData.plus(recentData.meanY!!.toFloat())
+                    inputData.plus(recentData.stdY!!.toFloat())
+                    inputData.plus(recentData.magY!!.toFloat())
+                    inputData.plus(recentData.meanZ!!.toFloat())
+                    inputData.plus(recentData.stdZ!!.toFloat())
+                    inputData.plus(recentData.magZ!!.toFloat())
+                    inputData.plus(recentData.step!!.toFloat())
+                    var distance = if (recentData.distance == true) 1F else 0F
+                    inputData.plus(distance)
+                    var home = if (recentData.home == true) 1F else 0F
+                    inputData.plus(home)
+                    var work = if (recentData.work == true) 1F else 0F
+                    inputData.plus(work)
+                    inputData.plus(recentData.currentTime!!.toFloat())
+
+                    var result = client.inference(inputData)
+                    Log.d(TAG, "Inference 결과: ${result}")
+                    resultList.plus(result.toInt())
+                }
+            }
+
             if (iteration < 5) {
-                interventionNotification()
-                Log.d(TAG, "Intervention Sent")
+                if (resultList.average() > 0.5) {
+                    Log.d(TAG, "Inference 평균: ${resultList.average()}")
+                    interventionNotification()
+                    Log.d(TAG, "Intervention Sent")
+                }
             }
             else {
                 emaNotification()
@@ -67,6 +111,8 @@ class TimerService: Service() {
             .setGroup(GROUP_KEY_NOTIFY)
             .setAutoCancel(false)
         startForeground(Constants.EMA_SERVICE_ID, builder.build())
+
+        client = Client(applicationContext)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -76,7 +122,7 @@ class TimerService: Service() {
         } else {
             Log.d(TAG, "EMA service started...")
             //timer.scheduleAtFixedRate(timerTask, 1200000, 1200000)
-            timer.scheduleAtFixedRate(timerTask, 600000, 600000)
+            timer.scheduleAtFixedRate(timerTask, 180000, 180000)
 
         }
         return super.onStartCommand(intent, flags, startId)

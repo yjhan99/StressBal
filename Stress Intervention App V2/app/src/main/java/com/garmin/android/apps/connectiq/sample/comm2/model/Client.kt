@@ -53,6 +53,11 @@ class Client (input_context: Context?) {
         return Pair(tlModel!!.calculateTestStatistics(), tlModel!!.size_Testing)
     }
 
+    fun inference(inputData: FloatArray): String {
+        var result = tlModel!!.predict(inputData)
+        return result.get(0).className
+    }
+
     fun setLastLoss(epoch: Int, newLoss: Float) {
         if (epoch == local_epochs - 1) {
             Log.e(TAG, "Training finished after epoch = $epoch")
